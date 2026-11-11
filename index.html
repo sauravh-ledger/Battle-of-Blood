@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self' blob: data:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; worker-src blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self' blob: data:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self' data:; worker-src blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Battle of Blood: Arena</title>
 
 <style>
@@ -147,7 +147,7 @@ select{background:#111a22;color:#fff;border:1px solid var(--line);padding:6px;bo
 .tb{position:absolute;border-radius:50%;background:rgba(10,16,22,.5);border:2px solid rgba(255,255,255,.25);font-weight:700;font-size:12px;letter-spacing:.06em;display:flex;align-items:center;justify-content:center;color:#fff;touch-action:none}
 .tb:active,.tb.dn{background:rgba(62,240,216,.35)}
 #tFire{width:88px;height:88px;right:5%;bottom:22%;font-size:15px;border-color:rgba(255,80,90,.7)}
-#tFire2{width:62px;height:62px;left:4%;top:48%;border-color:rgba(255,80,90,.5)}
+#tFire2{width:62px;height:62px;left:178px;top:40%;border-color:rgba(255,80,90,.5)}
 #tAim{width:58px;height:58px;right:calc(5% + 100px);bottom:30%}
 #tJump{width:62px;height:62px;right:3%;bottom:6%}
 #tRel{width:52px;height:52px;right:calc(5% + 90px);bottom:12%}
@@ -652,12 +652,18 @@ const QUAL = {
   low:    { pr: .75, shadow: 0,    bloom: false, rain: 700,  msaa: 0, lights: 2, ao: false, smaa: false, tex: 512 },
   medium: { pr: 1,   shadow: 1024, bloom: true,  rain: 1600, msaa: 0, lights: 4, ao: false, smaa: true,  tex: 1024 },
   high:   { pr: 1.5, shadow: 2048, bloom: true,  rain: 3200, msaa: 4, lights: 6, ao: true,  smaa: false, tex: 1024 },
+  mobile: { pr: 2,   shadow: 1024, bloom: true,  rain: 900,  msaa: 0, lights: 3, ao: false, smaa: true,  tex: 1024, dyn: true },
 };
+// dynamic resolution: scales the pixel ratio between DYN_MIN and the tier max to hold a smooth frame rate
+const DYN_MIN = 1;
+let dynPR = 0;
+function targetPR() { const dpr = window.devicePixelRatio || 1; return Q.dyn ? Math.min(dpr, dynPR || Math.min(1.5, Q.pr)) : Math.min(dpr, Q.pr); }
+function applyPR() { const pr = targetPR(); renderer.setPixelRatio(pr); if (composer) { composer.setPixelRatio(pr); composer.setSize(innerWidth, innerHeight); } if (aoPass) aoPass.setSize(innerWidth, innerHeight); }
 let qName = 'medium', Q = QUAL.medium;
 function pickQuality() {
   const s = SAVE.set.q;
   if (s !== 'auto') qName = s;
-  else qName = IS_TOUCH ? 'low' : (Math.min(screen.width, screen.height) > 700 && (navigator.hardwareConcurrency || 4) >= 6 ? 'high' : 'medium');
+  else qName = IS_TOUCH ? 'mobile' : (Math.min(screen.width, screen.height) > 700 && (navigator.hardwareConcurrency || 4) >= 6 ? 'high' : 'medium');
   Q = QUAL[qName];
   renderer.shadowMap.enabled = Q.shadow > 0;
 }
@@ -685,13 +691,13 @@ const GradeShader = {
 };
 function setupPipeline() {
   if (composer) { composer.dispose && composer.dispose(); composer = null; }
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, Q.pr));
+  renderer.setPixelRatio(targetPR());
   const W = innerWidth, H = innerHeight;
   renderer.setSize(W, H, false);
   if (Q.bloom) {
     const rt = new THREE.WebGLRenderTarget(W, H, { type: THREE.HalfFloatType, samples: Q.msaa });
     composer = new EffectComposer(renderer, rt);
-    composer.setPixelRatio(Math.min(window.devicePixelRatio || 1, Q.pr));
+    composer.setPixelRatio(targetPR());
     composer.setSize(W, H);
     composer.addPass(new RenderPass(scene, camera));
     if (Q.ao) { aoPass = new GTAOPass(scene, camera, W, H); aoPass.updateGtaoMaterial({ radius: .7, distanceExponent: 1, thickness: 1.2, scale: 1.1, samples: 12 }); aoPass.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 12 }); aoPass.blendIntensity = .9; composer.addPass(aoPass); } else aoPass = null;
@@ -2460,7 +2466,8 @@ function tick(dt) {
   if (G.state === 'play') {
     G.t += dt;
     updateTrain(dt); updatePlayer(dt, G.t); updateJeep(dt); updateAllies(dt, G.t); updateEnemies(dt, G.t); updateProjs(dt); updateProps(dt); updatePickups(dt, G.t); updateLoot(dt, G.t); updateWalls(dt); updateMines(dt, G.t); updateTraps(dt, G.t); updateWaves(dt); updateInteract(); updateHUD(dt); updateNums(dt);
-    if (G.autoQ && !G.autoQ.done) { G.autoQ.t += dt; G.autoQ.frames++; if (G.autoQ.t > 4) { const fps = G.autoQ.frames / G.autoQ.t; G.autoQ.done = true; if (fps < 38 && qName !== 'low') { qName = qName === 'high' ? 'medium' : 'low'; Q = QUAL[qName]; setupPipeline(); toast('Graphics lowered for smoother play'); } } }
+    if (Q.dyn) { const D = G.dyn || (G.dyn = { t: 0, f: 0, slow: 0 }); D.t += dt; D.f++; if (D.t > 1.5) { const fps = D.f / D.t; const cur = targetPR(), max = Math.min(window.devicePixelRatio || 1, Q.pr); if (fps < 45 && cur > DYN_MIN) { dynPR = Math.max(DYN_MIN, cur - .15); applyPR(); } else if (fps > 57 && cur < max) { dynPR = Math.min(max, cur + .1); applyPR(); } if (fps < 28 && cur <= DYN_MIN + .01) { if (++D.slow >= 3 && SAVE.set.q === 'auto') { qName = 'low'; Q = QUAL.low; dynPR = 0; setupPipeline(); toast('Graphics lowered for smoother play'); } } else D.slow = 0; D.t = 0; D.f = 0; } }
+    if (G.autoQ && !G.autoQ.done && !Q.dyn) { G.autoQ.t += dt; G.autoQ.frames++; if (G.autoQ.t > 4) { const fps = G.autoQ.frames / G.autoQ.t; G.autoQ.done = true; if (fps < 38 && qName !== 'low') { qName = qName === 'high' ? 'medium' : 'low'; Q = QUAL[qName]; setupPipeline(); toast('Graphics lowered for smoother play'); } } }
   } else if (G.state === 'menu') {
     updateTrain(dt); G.menuT += dt; const a = G.menuT * .05; const rr = world.bounds * .7;
     camera.position.set(Math.sin(a) * rr, 9 + Math.sin(G.menuT * .2) * 2, Math.cos(a) * rr); camera.fov = 60; camera.updateProjectionMatrix(); camera.lookAt(0, 3, 0);
