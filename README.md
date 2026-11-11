@@ -2,7 +2,7 @@
 
 A 3D first-person shooter that runs in the browser — on PC and on mobile.
 
-**▶ Play free:** https://sauravh-ledger.github.io/battle-of-blood/
+**▶ Play free:** https://sauravh-ledger.github.io/Battle-of-Blood/
 
 ![Battle of Blood: Arena](media/cover.png)
 
