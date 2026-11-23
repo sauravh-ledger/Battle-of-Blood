@@ -236,6 +236,17 @@ select{background:#111a22;color:#fff;border:1px solid var(--line);padding:6px;bo
 #mapLeg i{display:inline-block;width:12px;height:12px;margin-right:9px;vertical-align:-1px;border:2px solid #000;border-radius:50%}
 #mapLeg small{color:var(--mut);font-size:11px;letter-spacing:.12em;margin-top:6px}
 #how,#privacy{z-index:90}
+#pvpCd{position:absolute;left:50%;top:16%;transform:translateX(-50%);text-align:center;pointer-events:none;z-index:12}
+#pvpCd b{display:block;font-family:var(--ft);font-size:clamp(70px,16vw,170px);line-height:.9;color:#ffd23a;text-shadow:0 0 34px rgba(255,190,40,.7);font-weight:400}
+#pvpCd span{display:block;letter-spacing:.26em;font-weight:700;font-size:15px;color:#fff;text-shadow:0 2px 8px #000}
+#cmPanel{position:absolute;left:50%;top:196px;transform:translateX(-50%);display:flex;gap:10px;align-items:stretch;z-index:3;max-width:94vw}
+.cmCol{min-width:180px;background:rgba(5,10,16,.82);border:1px solid var(--tc);border-top:4px solid var(--tc);border-radius:10px;padding:6px 8px}
+.cmCol h4{margin:0 0 4px;font-family:var(--fh);letter-spacing:.12em;color:var(--tc);font-size:16px;font-weight:500;display:flex;justify-content:space-between}
+.cmP{display:flex;align-items:center;gap:6px;width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:8px;color:#fff;font-family:var(--fb);font-weight:700;font-size:13px;padding:5px 8px;margin-top:4px;letter-spacing:.05em;text-align:left}
+button.cmP{cursor:pointer}button.cmP:hover{background:rgba(255,255,255,.18)}.cmP.empty{opacity:.4;border-style:dashed}
+.cmP i{margin-left:auto;font-style:normal;color:var(--mut);font-size:10px;letter-spacing:.12em}
+.cmVs{align-self:center;font-family:var(--fh);font-size:22px;color:#fff;letter-spacing:.1em}
+@media (max-width:900px),(max-height:520px){#cmPanel{top:140px}.cmCol{min-width:130px}.cmP{font-size:11px;padding:3px 6px}.cmCol h4{font-size:13px}}
 #downed{position:absolute;left:50%;top:36%;transform:translateX(-50%);text-align:center}
 #downed b{font-family:var(--ft);font-size:56px;color:#ff3355;text-shadow:0 0 22px rgba(255,0,40,.6);display:block;font-weight:400}
 #downed span{letter-spacing:.2em;font-weight:700;font-size:14px}
@@ -441,6 +452,7 @@ body.inLobby #chatLog{display:none}
       <div class="row">
         <button class="big" id="deploy">Deploy</button>
         <button class="ghost" id="dailyBtn">Daily reward</button>
+        <button class="ghost" id="cmBtn">⚔ Custom match 1v1 / 2v2</button>
         <button class="ghost" data-open="how">How to play</button>
       </div>
     </section>
@@ -450,7 +462,7 @@ body.inLobby #chatLog{display:none}
       <div class="set"><label>Your name</label><input class="inp" id="olNick" maxlength="14" placeholder="Player" autocomplete="off"><span></span></div>
       <div class="set hide" id="olSrvRow"><label>Game server</label><input class="inp" id="olSrv" placeholder="wss://your-server.onrender.com" autocomplete="off" style="font-size:14px"><button class="ghost" id="olSrvSave">Save</button></div>
       <div id="olForm" class="hide">
-        <div class="row" style="margin:10px 0 4px"><button class="big" id="olCreate">Create squad</button><span class="sub" style="margin:0">or</span><input class="inp" id="olCode" maxlength="6" placeholder="CODE" autocomplete="off"><button class="ghost" id="olJoin">Join squad</button></div>
+        <div class="row" style="margin:10px 0 4px"><button class="big" id="olCreate">Create squad</button><button class="big alt" id="olCreateCm">⚔ Create custom match</button><span class="sub" style="margin:0">or</span><input class="inp" id="olCode" maxlength="6" placeholder="CODE" autocomplete="off"><button class="ghost" id="olJoin">Join squad</button></div>
       </div>
       <div id="olSquad" class="hide">
         <div class="codeBox">SQUAD CODE <b id="olCodeB"></b><button class="ghost" id="olCopy">Copy</button></div>
@@ -458,7 +470,7 @@ body.inLobby #chatLog{display:none}
         <div class="row"><button class="big" id="olStart">Start squad match</button><button class="big alt hide" id="olJoinLive">Join match in progress</button><button class="ghost" id="olLeave">Leave squad</button></div>
         <p class="sub" id="olHint" style="margin-top:10px"></p>
       </div>
-      <div class="steps"><div>Open this game from its claude.ai link and share that link with your friends (Share → invite them, with at least “can interact / contributor” access).</div><div>One player presses <b>Create squad</b> and tells everyone the 4-letter code.</div><div>Friends open the link, type the code and press <b>Join squad</b>. The host picks a map on the Play tab and starts.</div><div>Villains get tougher with more players. If you go down, your squad brings you back when the wave is cleared.</div></div>
+      <div class="steps"><div><b>Custom match (1v1 / 2v2):</b> press “Create custom match”, share the code, then in the lobby the host picks the arena and moves players between Blue and Red. 10 s to prepare, last team standing wins the round, small loot and a supply drop in each round. No jetpack or grapple.</div><div>Open this game from its claude.ai link and share that link with your friends (Share → invite them, with at least “can interact / contributor” access).</div><div>One player presses <b>Create squad</b> and tells everyone the 4-letter code.</div><div>Friends open the link, type the code and press <b>Join squad</b>. The host picks a map on the Play tab and starts.</div><div>Villains get tougher with more players. If you go down, your squad brings you back when the wave is cleared.</div></div>
     </section>
     <section data-p="missions" class="hide">
       <div class="h2">Daily missions</div>
@@ -540,6 +552,7 @@ body.inLobby #chatLog{display:none}
   <div id="bigmap" class="hide"><canvas id="mapC" width="720" height="720"></canvas><div id="mapLeg"><b>TACTICAL MAP</b><span><i style="background:#3ef0d8"></i>You</span><span><i style="background:#5ab4ff"></i>Friends</span><span><i style="background:#3ef0d8;border-radius:2px"></i>AI squad</span><span><i style="background:#ff3355"></i>Villains</span><span><i style="background:#ff9a2a;border-radius:2px;transform:rotate(45deg)"></i>Beasts</span><span><i style="background:#ffd23a"></i>Giants</span><span><i style="background:#c45cff"></i>KAAL</span><span><i style="background:#ffc83d;border-radius:2px"></i>Ammo</span><span><i style="background:#3dff7a;border-radius:2px"></i>Health</span><span><i style="background:#c9d6e0;border-radius:2px"></i>Loot</span><span><i style="background:#7ae8ff;border-radius:0;height:3px;border:0"></i>Zipline</span><small>M / TAB TO CLOSE</small></div></div>
   <div id="speedFx"></div><div id="boostFx" class="hide"></div><div id="alarm" class="hide"></div>
   <div id="killPop"><b id="kpB"></b><span id="kpS"></span></div>
+  <div id="pvpCd" class="hide"><b id="pvpCdB">10</b><span id="pvpCdS"></span></div>
   <div id="downed" class="hide"><b id="dnB">DOWNED</b><span id="dnS">YOU RESPAWN WHEN YOUR SQUAD CLEARS THE WAVE</span></div>
   <div id="xh"><i></i><i></i><i></i><i></i><b></b></div>
   <div id="hit"></div>
@@ -658,7 +671,8 @@ body.inLobby #chatLog{display:none}
     <div class="lbChip"><button id="lbMapPrev" aria-label="Previous map">◀</button><span id="lbMap"></span><button id="lbMapNext" aria-label="Next map">▶</button></div>
     <div style="display:flex;gap:6px"><button class="lbChip" id="lbCopy">COPY CODE</button><button class="lbChip" id="lbLoadout">SKINS &amp; LOADOUT</button></div></div>
   <div id="lbTimer"><b id="lbTimerB">--:--</b><small id="lbTimerS"></small></div>
-  <div id="lbMode"><button class="lbChip" id="lbMd">SQUAD CO-OP</button><button class="lbChip hide" id="lbKl">FIRST TO 10 KILLS</button><button class="lbChip hide" id="lbTl">5 MIN</button><button class="lbChip hide" id="lbTeam">TEAM BLUE ⇄</button></div>
+  <div id="lbMode"><button class="lbChip" id="lbMd">SQUAD CO-OP</button><button class="lbChip hide" id="lbKl">BEST OF 3</button><button class="lbChip hide" id="lbTl">10S PREP</button><button class="lbChip hide" id="lbTeam">TEAM BLUE ⇄</button></div>
+  <div id="cmPanel" class="hide"></div>
   <div id="lbPlates"></div>
   <div id="lbBottom">
     <div id="lbChat"><div id="lbChatLog"></div><div class="row1"><input id="lbChatIn" maxlength="100" placeholder="Say something to your squad…" autocomplete="off"><button id="lbChatSend">SEND</button></div><div id="lbQuick"></div></div>
@@ -829,6 +843,9 @@ const MAPS = {
   bazaar:   { name: 'Neon Chowk',        desc: 'Flooded neon market of a dystopian megacity', sw: 'linear-gradient(135deg,#1a0526,#ff2fd0 55%,#3ef0ff)', noBg: true },
   refinery: { name: 'Dustfall Refinery', desc: 'Sun-baked desert refinery with tanks and pipelines', sw: 'linear-gradient(135deg,#3a6aa8,#e8c08a 55%,#ffd68a)' },
   himgiri:  { name: 'Himgiri Outpost',   desc: 'Snowy mountain base with bunkers, towers and a radar', sw: 'linear-gradient(135deg,#5a8ac8,#e8f2ff 55%,#ffffff)', hdr: 'docks' },
+  pit:      { name: 'Rainport Pit',     desc: 'Small container-yard arena for 1v1 and 2v2', sw: 'linear-gradient(135deg,#274a7a,#c0581c 60%,#ffb35a)', arena: true, hdr: 'docks' },
+  gully:    { name: 'Neon Gully',        desc: 'Tight neon alley arena for 1v1 and 2v2', sw: 'linear-gradient(135deg,#0a0820,#ff2fd0 55%,#3ef0ff)', arena: true, hdr: 'bazaar', noBg: true },
+  court:    { name: 'Sun Court',         desc: 'Sandstone temple courtyard arena for 1v1 and 2v2', sw: 'linear-gradient(135deg,#3a7ac8,#f0d8a0 55%,#b9a37a)', arena: true, hdr: 'ruins' },
   ruins:    { name: 'Paatal Temple',     desc: 'Jungle temple with a trap dungeon — lure villains in', sw: 'linear-gradient(135deg,#1f4a24,#8ab84a 55%,#d8b46a)', hdr: 'ruins' },
 };
 const ENEMIES = {
@@ -1647,6 +1664,70 @@ function buildRuins() {
 /* =========================================================
    FX: rain, dust, particles, decals, tracers, smoke, flash
    ========================================================= */
+/* =========================================================
+   CUSTOM-MATCH ARENAS — three small, point-symmetric (fair) fighting places
+   ========================================================= */
+function arenaFill(list, M) {
+  const put = e => {
+    const [x, z, w, d, h, mk, y = 0] = e;
+    if (mk === 'pil') addCyl(x, y, z, w, h, M.pil, { seg: 18, ts: 3, box: w });
+    else if (mk.length === 2 && mk[0] === 'c') { const geo = new THREE.BoxGeometry(w, h, d); fixContainerUV(geo, w > d); addBox(x, y, z, w, h, d, M[mk], { geo }); }
+    else {
+      addBox(x, y, z, w, h, d, M[mk], { ts: 3 });
+      if (mk === 'st') { addBox(x, y + 2.1, z, w + .5, .12, d + .7, M.awn, { collide: false, ray: false, ts: 0 }); for (const sx of [-1, 1]) addCyl(x + sx * w / 2, 0, z + d / 2 + .3, .05, 2.1, M.pole, { collide: false, ray: false }); }
+    }
+  };
+  for (const e of list) { put(e); put([-e[0], -e[1], ...e.slice(2)]); }
+}
+function buildArena(id) {
+  const W = world, B = W.bounds = id === 'gully' ? 21 : 24; W.noTrain = true; const S = 2 * B + 40; ENV_I = id === 'gully' ? .7 : 1;
+  let skyP, panels, fogC, fogD, hemi, sun, ground, cover, loot; const M = {};
+  const ring = (mat, h, t, ts = 4) => { for (const s of [-1, 1]) { addBox(0, 0, s * (B + t / 2), 2 * B + 2 * t, h, t, mat, { ts }); addBox(s * (B + t / 2), 0, 0, t, h, 2 * B, mat, { ts }); } };
+  if (id === 'pit') {
+    skyP = { top: 0x274a7a, mid: 0xe8b078, bot: 0xd0a47c, sunDir: [.5, .28, -.6], sunCol: 0xffc080, sunSize: 1200, cloud: .5, cloudCol: 0xe0b898 };
+    panels = [{ w: 30, h: 6, c: 0xffa050, pos: [20, 15, 10] }, { w: 40, h: 4, c: 0x405870, pos: [0, 30, 0] }];
+    fogC = 0xc4a488; fogD = .009; hemi = [0xffe0c0, 0x4a4038, .85]; sun = [0xffc890, 3, [40, 38, -50]];
+    const asp = asphaltTex(61, true, false); allTex(asp).forEach(t => t.repeat.set(S / 14, S / 14)); ground = std({ t: asp, rough: 1, bump: .45 });
+    [[0xc0581c, 'MONSOON CARGO'], [0x1d4f8a, 'VYOM LINES'], [0x8a1d1d, 'TARANG SHIPPING'], [0x2c6b45, 'NEELKANTH'], [0x167a80, 'SAAGAR EXPRESS'], [0x9a8a20, 'KAAL CORP']].forEach((c, i) => { M['c' + i] = std({ t: containerTex(c[0], c[1], 50 + i), rough: .55, metal: .45, bump: 1.2 }); });
+    M.wd = std({ t: woodTex(7), rough: .85 }); M.bar = std({ t: concreteTex(4, '#5a5c5e'), rough: .9 });
+    const st = (x, z, n, alongX) => { const w = alongX ? 6.1 : 2.45, d = alongX ? 2.45 : 6.1; for (let k = 0; k < n; k++) { const geo = new THREE.BoxGeometry(w, 2.6, d); fixContainerUV(geo, alongX); addBox(x, k * 2.6, z, w, 2.6, d, M['c' + ((Math.abs(Math.round(x * 7 + z * 3)) + k) % 6)], { geo }); } };
+    for (let x = -B + 3; x <= B + 3; x += 6.2) { st(x, -B - 1.3, 2, true); st(x, B + 1.3, 2, true); }
+    for (let z = -B + 3; z <= B + 3; z += 6.2) { st(-B - 1.3, z, 2, false); st(B + 1.3, z, 2, false); }
+    cover = [[-9, -10, 6.1, 2.45, 2.6, 'c1'], [10, -13, 2.45, 6.1, 2.6, 'c2'], [-16, -3, 2.45, 6.1, 2.6, 'c3'], [-16, -3, 2.45, 6.1, 2.6, 'c3', 2.6], [3.7, -6, 1.2, 1.2, 1.2, 'wd'], [5, -6, 1.2, 1.2, 1.2, 'wd'], [4.35, -6, 1.2, 1.2, 1.2, 'wd', 1.2], [-4, -15, 3.2, .9, 1.2, 'bar'], [14, -5, 6.1, 2.45, 2.6, 'c4'], [-5, -1.5, 4, .8, 1.2, 'bar']];
+    loot = [[-12, -1], [12, 1], [7, -17], [-7, 17]];
+    for (const [x, z] of [[-14, 0], [14, 0], [0, -14], [0, 14]]) addLamp(x, z, 9, 0xffa850, false, true);
+  } else if (id === 'gully') {
+    skyP = { top: 0x0a0820, mid: 0x2a1048, bot: 0x120818, sunDir: [.3, .4, .5], sunCol: 0xff60c0, sunSize: 800, cloud: .3, cloudCol: 0x1a1030, stars: .9 };
+    panels = [{ w: 30, h: 6, c: 0xff2fd0, pos: [20, 10, 10] }, { w: 30, h: 6, c: 0x3ef0ff, pos: [-20, 10, -10] }];
+    fogC = 0x140a22; fogD = .016; hemi = [0x7a6ac8, 0x1a1020, .7]; sun = [0x9a8aff, 1.4, [20, 40, -30]];
+    const asp = asphaltTex(62, true, false); allTex(asp).forEach(t => t.repeat.set(S / 14, S / 14)); ground = std({ t: asp, rough: 1, bump: .45 });
+    M.br = std({ t: brickTex(64, '#6a3a30'), rough: .85 }); M.wd = std({ t: woodTex(9), rough: .8 }); M.st = std({ t: woodTex(10), rough: .8 }); M.bar = std({ t: concreteTex(4, '#5a5c5e'), rough: .9 });
+    M.dm = std({ color: 0x2a5a3a, rough: .5, metal: .6, t: metalPanelTex(13, '#2a5a3a'), bump: .6 }); M.awn = std({ color: 0xc03060, rough: .7 }); M.pole = std({ color: 0x2a2d30, rough: .5, metal: .7 });
+    ring(M.br, 9, 3);
+    const sign = (txt, col, x, y, z, ry) => { const ns = neonTex(txt, col); const m = new THREE.Mesh(new THREE.PlaneGeometry(8, 2), new THREE.MeshBasicMaterial({ map: ns.map, toneMapped: false, transparent: true })); m.position.set(x, y, z); m.rotation.y = ry; W.group.add(m); };
+    sign('NEON GULLY', '#3ef0ff', 0, 5.5, -B - .05, 0); sign('CHAI · MOMO', '#ff2fd0', -4, 5.5, B + .05, Math.PI); sign('OPEN 24H', '#ffd23a', -B - .05, 5.5, 0, Math.PI / 2); sign('ARENA', '#ff3355', B + .05, 5.5, 0, -Math.PI / 2);
+    for (const [x, z, c] of [[-12, -12, 0xff2fd0], [12, 12, 0xff2fd0], [12, -12, 0x3ef0ff], [-12, 12, 0x3ef0ff]]) { const l = new THREE.PointLight(c, 70, 26, 1.6); l.position.set(x, 5, z); W.group.add(l); W.lamps.push(l); const b = new THREE.Mesh(boxGeo(.5, .5, .5), glow(c)); b.position.set(x, 5.2, z); W.group.add(b); }
+    cover = [[-7, -10, 3, 1.6, 1.2, 'st'], [8, -9, 2.2, 1.2, 1.5, 'dm'], [-3, -5, 3.4, .7, 1.1, 'bar'], [-12, -1, 1.2, 5, 2.6, 'br'], [4, -13, 1.2, 1.2, 1.2, 'wd'], [5.3, -13, 1.2, 1.2, 1.2, 'wd'], [4.65, -13, 1.2, 1.2, 1.2, 'wd', 1.2], [-11, -12, 2.4, 1.2, 1.5, 'dm']];
+    loot = [[-9, -2], [9, 2], [3, -15], [-3, 15]];
+  } else {
+    skyP = { top: 0x3a7ac8, mid: 0xf0d8a0, bot: 0xe8d0a0, sunDir: [-.4, .5, -.5], sunCol: 0xfff0c0, sunSize: 1400, cloud: .4, cloudCol: 0xf4ecdc };
+    panels = [{ w: 30, h: 6, c: 0xffe0a0, pos: [20, 15, 10] }, { w: 40, h: 4, c: 0x80a0c8, pos: [0, 30, 0] }];
+    fogC = 0xe8d4a8; fogD = .006; hemi = [0xfff0d8, 0x6a5a40, .95]; sun = [0xfff0d0, 3.4, [-40, 50, -40]];
+    const gt = concreteTex(63, '#b9a37a'); allTex(gt).forEach(t => t.repeat.set(S / 10, S / 10)); ground = std({ t: gt, rough: .95, bump: .5 });
+    M.sb = std({ t: stoneTex(), rough: .9 }); M.sw = M.sb; M.pil = std({ t: stoneTex(), rough: .85 });
+    ring(M.sb, 7, 3, 3);
+    for (const z of [-1, 1]) for (let x = -18; x <= 18; x += 9) addCyl(x, 0, z * (B - .8), .7, 7, M.pil, { seg: 18, ts: 3, box: .8 });
+    for (const x of [-1, 1]) for (let z = -18; z <= 18; z += 9) addCyl(x * (B - .8), 0, z, .7, 7, M.pil, { seg: 18, ts: 3, box: .8 });
+    cover = [[4, 4, .8, 0, 5, 'pil'], [4, -4, .8, 0, 5, 'pil'], [-10, -8, 5, .9, 1.3, 'sw'], [12, -9, .9, 5, 1.3, 'sw'], [-3, -12, .9, 4, 2.6, 'sb'], [-15, -2, 2.4, 2.4, 2.6, 'sb']];
+    loot = [[-9, 2], [9, -2], [2, -16], [-2, 16]];
+  }
+  const g = new THREE.Mesh(new THREE.PlaneGeometry(S, S), ground); g.rotation.x = -Math.PI / 2; g.receiveShadow = true; W.group.add(g); W.meshes.push(g);
+  arenaFill(cover, M);
+  scene.fog = new THREE.FogExp2(fogC, fogD); W.sky = makeSky(skyP); scene.environment = makeEnv(skyP, panels);
+  W.hemi = new THREE.HemisphereLight(hemi[0], hemi[1], hemi[2]); W.sun = new THREE.DirectionalLight(sun[0], sun[1]); W.sun.position.set(...sun[2]);
+  const z0 = B - 4; W.arSp = [[new V3(-5, 0, -z0), new V3(5, 0, -z0)], [new V3(5, 0, z0), new V3(-5, 0, z0)]]; W.arLoot = loot; W.arDrop = [0, 0]; W.start.set(0, 0, -z0);
+}
+
 const FX = {};
 function buildFX() {
   // rain
@@ -2178,6 +2259,7 @@ function updatePlayer(dt, t) {
   if (P.vehicle) { P.adsAmt = 0; if (P.healT > 0) { P.healT -= dt; P.hp = Math.min(100, P.hp + 25 * dt); } return; }
   let mx, mz;
   if (IS_TOUCH) { mx = touch.move.x; mz = touch.move.y; } else { mx = (K.KeyD || K.ArrowRight ? 1 : 0) - (K.KeyA || K.ArrowLeft ? 1 : 0); mz = (K.KeyW || K.ArrowUp ? 1 : 0) - (K.KeyS || K.ArrowDown ? 1 : 0); }
+  if (pvpLocked()) mx = mz = 0;
   const ml = Math.hypot(mx, mz); if (ml > 1) { mx /= ml; mz /= ml; }
   const wantAds = IS_TOUCH ? touch.aim : aimHeld;
   P.sprint = (IS_TOUCH ? (mz > .92) : !!(K.ShiftLeft || K.ShiftRight)) && mz > .3 && !wantAds && P.onGround;
@@ -2187,7 +2269,7 @@ function updatePlayer(dt, t) {
   P.vel.x = damp(P.vel.x, wx, k, dt); P.vel.z = damp(P.vel.z, wz, k, dt);
   if ((K.Space || touch.jump) && P.zip) { touch.jump = false; K.Space = false; leaveZip(); }
   else if ((K.Space || touch.jump) && P.onTrain) { touch.jump = false; leaveTrain(); }
-  else if ((K.Space || touch.jump) && P.onGround) { P.vel.y = 8.3; P.onGround = false; touch.jump = false; Audio_.play('jump'); }
+  else if ((K.Space || touch.jump) && P.onGround && !pvpLocked()) { P.vel.y = 8.3; P.onGround = false; touch.jump = false; Audio_.play('jump'); }
   if (P.zip) { updateZip(dt); P.sprint = false; } else if (P.onTrain) { mx = mz = 0; P.sprint = false; } else { const gf = updateGear(dt, mx, mz); P.vel.y -= 24 * dt * gf; moveBody(P, dt, .55, true); }
   // ADS & spread recovery
   P.adsAmt = damp(P.adsAmt, wantAds && P.reloadT <= 0 && P.switchT <= 0 ? 1 : 0, 14, dt);
@@ -2216,6 +2298,7 @@ function updatePlayer(dt, t) {
   if (P.pos.y < GY(P.pos.x, P.pos.z) - 10) P.pos.set(world.start.x, GY(world.start.x, world.start.z) + 1, world.start.z);
 }
 function tryFire(t) {
+  if (pvpLocked()) return;
   const id = curId(), w = wstat(id), a = P.ammo[id];
   if (P.switchT > 0 || P.reloadT > 0 || P.fireCd > 0 || P.healT > 0 || P.vehicle) return;
   if (!w.auto && !P.trigger) return;
@@ -2330,11 +2413,11 @@ function rollLoot(rich) {
   return { kind, lvl: ['armor', 'helmet'].includes(kind) ? lvl : 1 };
 }
 function lootName(it) {
-  switch (it.kind) { case 'med': return 'Medkit'; case 'wall': return 'Gloo Wall'; case 'mine': return 'Trap Mine'; case 'ammo': return 'Ammo Box'; case 'bomb': return 'Bomb'; case 'boost': return 'Booster'; case 'drop': return 'AIRDROP';
+  switch (it.kind) { case 'med': return 'Medkit'; case 'wall': return 'Gloo Wall'; case 'mine': return 'Trap Mine'; case 'ammo': return 'Ammo Box'; case 'bomb': return 'Bomb'; case 'boost': return 'Booster'; case 'drop': return 'AIRDROP'; case 'adrop': return 'SUPPLY DROP';
     case 'armor': return 'Armor Vest L' + it.lvl; case 'helmet': return 'Helmet L' + it.lvl; case 'pack': return 'Backpack L' + it.lvl; case 'att': return ATT[it.sub]; case 'gun': return WEAPONS[it.sub].name; }
 }
 function spawnLootCrate(x, z, rich, force) {
-  const it = force || rollLoot(rich), g = new THREE.Group(), gy = GY(x, z); g.position.set(x, gy, z); const ammoC = it.kind === 'ammo', lc = it.kind === 'drop' ? 0xff3355 : ammoC ? 0xffc83d : RARITY_COL[it.lvl];
+  const it = force || rollLoot(rich), g = new THREE.Group(), gy = GY(x, z); g.position.set(x, gy, z); const ammoC = it.kind === 'ammo', lc = /drop$/.test(it.kind) ? 0xff3355 : ammoC ? 0xffc83d : RARITY_COL[it.lvl];
   const body = new THREE.Mesh(RB(.8, .55, .55, .05), MAT.lootBox); body.position.y = .28; body.castShadow = true; g.add(body);
   const strip = new THREE.Mesh(RB(.82, .07, .57, .02), new THREE.MeshStandardMaterial({ color: lc, emissive: lc, emissiveIntensity: 2 })); strip.position.y = .42; g.add(strip); if (ammoC) { const lb = new THREE.Mesh(new THREE.PlaneGeometry(.7, .2), new THREE.MeshBasicMaterial({ map: neonTex('AMMO', '#ffc83d').map, toneMapped: false, side: THREE.DoubleSide })); lb.position.set(0, .3, .28); g.add(lb); }
   const beam = new THREE.Mesh(cylGeo(.05, .05, 3, 6), new THREE.MeshBasicMaterial({ color: lc, transparent: true, opacity: .25, depthWrite: false, toneMapped: false, blending: THREE.AdditiveBlending })); beam.position.y = 1.9; g.add(beam);
@@ -2345,7 +2428,7 @@ function grantLoot(it, silent) {
   const add = (k, n = 1) => { if (P.inv[k] >= invCap(k)) return false; P.inv[k] = Math.min(invCap(k), P.inv[k] + n); return true; };
   switch (it.kind) {
     case 'med': case 'wall': case 'mine': case 'bomb': case 'boost': ok = add(it.kind); break;
-    case 'drop': grantDrop(); break;
+    case 'drop': grantDrop(); break; case 'adrop': pvpDropGrant(); break;
     case 'ammo': for (const id of P.list) P.ammo[id].reserve = Math.min(Math.round(WEAPONS[id].reserve * (1.7 + P.gear.pack * .5)), P.ammo[id].reserve + wstat(id).mag * 3); break;
     case 'armor': if (P.gear.armor >= it.lvl) ok = false; else { P.gear.armor = it.lvl; P.sh = shieldMax(); } break;
     case 'helmet': if (P.gear.helmet >= it.lvl) ok = false; else P.gear.helmet = it.lvl; break;
@@ -2361,8 +2444,8 @@ function updateLoot(dt, t) {
     const L = world.loot[i]; L.strip.material.emissiveIntensity = 1.5 + Math.sin(t * 4 + i) * .8;
     if (((L.chk = (L.chk || 0) - dt)) <= 0) { L.chk = .5; const sy = supportY(L.x, L.z, (L.y || 0) + .1); if ((L.y || 0) - sy > .05) L.fall = true; }
     if (L.fall) { L.vy = (L.vy || 0) - 22 * dt; L.y = (L.y || 0) + L.vy * dt; const sy = supportY(L.x, L.z, L.y + 1); if (L.y <= sy) { L.y = sy; L.vy = 0; L.fall = false; } L.g.position.y = L.y; }
-    if (Math.abs(L.x - P.pos.x) < 1.4 && Math.abs(L.z - P.pos.z) < 1.4 && Math.abs(P.pos.y - (L.y || 0)) < 2.2 && !P.vehicle && !P.onTrain) {
-      if (grantLoot(L.it)) { sparks(tmpV.set(L.x, (L.y || 0) + .6, L.z), RARITY_COL[L.it.lvl || 1], 18, 4, 2); world.group.remove(L.g); world.loot.splice(i, 1); }
+    if (Math.abs(L.x - P.pos.x) < 1.4 && Math.abs(L.z - P.pos.z) < 1.4 && Math.abs(P.pos.y - (L.y || 0)) < 2.2 && !P.vehicle && !P.onTrain && P.alive) {
+      if (grantLoot(L.it)) { if (PVP.on && L.pid !== undefined) { PVP.taken.add(L.pid); netEmit('pvploot', { id: L.pid, r: PVP.round }); } sparks(tmpV.set(L.x, (L.y || 0) + .6, L.z), RARITY_COL[L.it.lvl || 1], 18, 4, 2); world.group.remove(L.g); world.loot.splice(i, 1); }
       else if (!L.full) { L.full = true; pickMsg(lootName(L.it) + ' — already have', '#8a9aa8'); }
     } else L.full = false;
   }
@@ -2682,15 +2765,17 @@ function loadHDRI(mapId) {
 }
 function buildMap(id) {
   clearWorld(); world = newWorld(); G.map = id; baseMats();
-  ({ titan: () => buildIsle('titan'), ember: () => buildIsle('ember'), xeno: () => buildIsle('xeno'), neelgiri: buildNeelgiri, docks: buildDocks, bazaar: buildBazaar, refinery: buildRefinery, himgiri: buildHimgiri, ruins: buildRuins })[id]();
-  wallBounds(world.bounds, world.big ? 260 : 8); world.start.y = GY(world.start.x, world.start.z);
+  ({ titan: () => buildIsle('titan'), ember: () => buildIsle('ember'), xeno: () => buildIsle('xeno'), neelgiri: buildNeelgiri, docks: buildDocks, bazaar: buildBazaar, refinery: buildRefinery, himgiri: buildHimgiri, ruins: buildRuins, pit: () => buildArena('pit'), gully: () => buildArena('gully'), court: () => buildArena('court') })[id]();
+  wallBounds(world.bounds, world.big ? 260 : MAPS[id].arena ? 40 : 8); world.start.y = GY(world.start.x, world.start.z);
   const B = world.bounds;
+  if (!MAPS[id].arena) {
   for (let i = 0; i < 32; i++) { const a = i / 32 * Math.PI * 2, rr = B - 15, x = clamp(Math.cos(a) * rr * 1.25, -rr, rr), z = clamp(Math.sin(a) * rr * 1.25, -rr, rr); if (freeSpot(x, z, .9)) world.spawns.push(new V3(x, 0, z)); }
   if (!world.noTrain) buildTrain(B - 8);
   { const st = world.start; let placed = false; for (let k = 0; k < 40 && !placed; k++) { const a = k * 2.4, x = st.x + Math.cos(a) * (6 + k * .4), z = st.z + Math.sin(a) * (6 + k * .4); if (Math.abs(x) < B - 12 && Math.abs(z) < B - 12 && freeSpot(x, z, 2.4, 2)) { buildJeep(x, z, Math.atan2(x, z)); placed = true; } } }
   if (world.dungeonLoot) for (const [x, z] of world.dungeonLoot) spawnLootCrate(x, z, true);
   for (let i = 0; i < (world.big ? 40 : 16); i++) dropAmmoCache();
   const nL = world.big ? 60 : 26; for (let k = 0, tries = 0; k < nL && tries < 600; tries++) { const x = (R() - .5) * (B - 14) * 2, z = (R() - .5) * (B - 14) * 2; if (freeSpot(x, z, .8) && (!world.isle || GY(x, z) > 1.2)) { spawnLootCrate(x, z, false); k++; } }
+  }
   scene.add(world.group); scene.add(world.sky); scene.add(world.hemi); scene.add(world.sun); scene.add(world.sun.target);
   const s = world.sun; s.castShadow = Q.shadow > 0; if (s.castShadow) { s.shadow.mapSize.set(Q.shadow, Q.shadow); const c = s.shadow.camera; c.left = c.bottom = -45; c.right = c.top = 45; c.near = 1; c.far = 200; s.shadow.bias = -.0004; s.shadow.normalBias = .03; }
   world.sunOff = s.position.clone().normalize().multiplyScalar(80);
@@ -2700,27 +2785,29 @@ function buildMap(id) {
   addFXToScene();
   Audio_.rain(world.rain, world.rain ? .1 : 0);
 }
+function matchMapId() { return PVP.on && NET.on && MAPS[PVP.ar] ? PVP.ar : (NET.on && !NET.host && G.netMap && MAPS[G.netMap] ? G.netMap : SAVE.eq.map); }
 function startMatch(fromClick = true) {
   if (G.state === 'play' || G.loading) return; Audio_.init(); closeChat(); LOBBY.rd = false; LOBBY.cdEnd = 0; closeEmoteWheel(); hide('profCard');
-  const mapId = NET.on && !NET.host && G.netMap && MAPS[G.netMap] ? G.netMap : SAVE.eq.map; showLoader(MAPS[mapId].name); G.loading = true;
+  const mapId = matchMapId(); showLoader(MAPS[mapId].name); G.loading = true;
   if (fromClick) lockPointer(); // needs the click; the loader then builds the world
   requestAnimationFrame(() => requestAnimationFrame(() => { G.loading = false; try { startMatchNow(fromClick); } finally { hideLoader(); } }));
 }
 function startMatchNow(fromClick = true) {
   Audio_.init();
-  const mapId = NET.on && !NET.host && G.netMap && MAPS[G.netMap] ? G.netMap : SAVE.eq.map;
+  const mapId = matchMapId();
   buildMap(mapId); toggleMap(false); hide('downed'); setTxt('dnB', 'DOWNED'); setTxt('dnS', 'YOU RESPAWN WHEN YOUR SQUAD CLEARS THE WAVE');
   P.pos.copy(world.start); if (NET.on) { const k = NET.slot(); P.pos.x += (k % 2 ? 2.5 : -2.5) * Math.ceil(k / 2); } P.pos.y = GY(P.pos.x, P.pos.z) + .1; P.zip = null; P.zoomK = 1; P.noAmmoT = 0; P.vel.set(0, 0, 0); P.yaw = Math.atan2(world.start.x, world.start.z); P.pitch = 0; P.hp = 100; P.sh = 50; P.alive = true; P.revived = false; P.reloadT = 0; P.switchT = .45; P.adsAmt = 0;
   P.list = W_ORDER.filter(w => SAVE.owned.w.includes(w)); P.cur = 0; P.ammo = {}; for (const id of P.list) P.ammo[id] = { mag: WEAPONS[id].mag, reserve: WEAPONS[id].reserve };
   P.inv = { med: 3, wall: 2, mine: 2, bomb: 3, boost: 1 }; P.jp = SAVE.eq.jp || 'none'; P.fuel = JP().fuel; P.gas = 100; P.hook = null; P.boostT = 0; P.jetting = false; PRJ.length = 0; AIR.t = 20; AIR.planes.length = 0; AIR.chutes.length = 0; KS.n = 0; hookLine.visible = false; P.gear = { armor: 0, helmet: 0, pack: 0 }; P.att = {}; P.healT = 0; P.vehicle = null; P.onTrain = false;
-  if (PVP.on && NET.on) pvpPlaceSelf(); else PVP.on = false;
+  if (PVP.on && NET.on && world.arSp) { P.list = PVP_KIT.slice(); P.ammo = {}; for (const id of P.list) P.ammo[id] = { mag: WEAPONS[id].mag, reserve: WEAPONS[id].reserve }; P.inv = { med: 2, wall: 2, mine: 0, bomb: 1, boost: 0 }; P.jp = 'none'; P.fuel = 0; P.gas = 0; pvpPlaceSelf(); } else PVP.on = false;
   rebuildGuns(); clearOperatorPreview(); hudCache = {}; if (NET.on) allies = []; else spawnAllies();
   Object.assign(G, { nm: !!(SAVE.nm && MAPS[mapId] && MAPS[mapId].isle && SAVE.conq && SAVE.conq[mapId] && SAVE.conq[mapId].n > 0 && !(NET.on && !NET.host)), mainK: 0, wave: 0, queue: [], alive: 0, kills: 0, hs: 0, coins: 0, xp: 0, interT: 3, state: 'play', st: { kills: 0, hs: 0, maxWave: 0, barrels: 0, trapKills: 0, walls: 0, drive: 0, trainKills: 0, loot: 0, bosses: 0, heals: 0, vehKills: 0 } });
   G.maxAlive = (IS_TOUCH ? 8 : 12) + (world.big ? 2 : 0) + (NET.on ? 3 : 0); if (PVP.on) { G.nm = false; G.interT = 1e9; }
   if (SAVE.tut < 2) { show('tut'); clearTimeout(G.tutT); G.tutT = setTimeout(() => hide('tut'), 7000); SAVE.tut++; persist(); }
   $('bossBar').classList.add('hide'); $('feed').textContent = '';
+  $('gearBars').classList.toggle('hide', PVP.on); for (const b of ['tHook', 'tJet', 'tBoost']) $(b).style.display = PVP.on ? 'none' : '';
   show('hud'); hide('menu'); hide('over'); hide('pause'); hide('opName'); hide('lore'); $('touch').classList.toggle('on', IS_TOUCH);
-  banner((G.nm ? 'NIGHTMARE · ' : '') + MAPS[G.map].name, G.nm ? 'Tougher villains · double rewards' : 'Get ready'); if (G.nm) REDT = 2.4; if (PVP.on) banner(PVP_MODE_NAME[PVP.md], 'First to ' + PVP.kl + ' kills · ' + PVP.tl + ' minutes' + (PVP.md === 'team' ? ' · you are ' + TEAM_NAME[myTeam()] : '')); updateSlots();
+  banner((G.nm ? 'NIGHTMARE · ' : '') + MAPS[G.map].name, G.nm ? 'Tougher villains · double rewards' : 'Get ready'); if (G.nm) REDT = 2.4; if (PVP.on) banner(PVP_MODE_NAME[PVP.md] + ' · ' + MAPS[G.map].name, PVP_RW_NAME[PVP.rw] + ' · you are TEAM ' + TEAM_NAME[myTeam()]); updateSlots();
   try { flamePool(); tpBuildRig(); tpGun(); TP.rig.g.visible = true; for (const s of FLM.pool) s.visible = true; renderer.compile(scene, camera); TP.rig.g.visible = false; for (const s of FLM.pool) s.visible = false; } catch (e) { console.warn('prewarm', e); }
   if (fromClick) lockPointer(); Platform.gameplayStart(); G.autoQ = { t: 0, frames: 0, done: SAVE.set.q !== 'auto' };
 }
@@ -2823,7 +2910,7 @@ function priceBtn(price, owned, equipped, onBuy, onEquip, label) {
 function renderMenu() {
   $('coins').textContent = SAVE.coins; const rk = rankOf(SAVE.xp); $('rankChip').firstChild.nodeValue = 'RANK ' + rk.lvl; $('rankChip').querySelector('small').textContent = rk.cur + '/' + rk.need;
   const ml = $('mapList'); ml.textContent = '';
-  for (const id in MAPS) { const m = MAPS[id], c = document.createElement('button'); c.className = 'card' + (SAVE.eq.map === id ? ' on' : ''); const sw = document.createElement('div'); sw.className = 'sw'; sw.style.background = m.sw; const b = document.createElement('b'); b.textContent = m.name; const s = document.createElement('span'); s.textContent = m.desc; c.append(sw, b, s); { const cq = (SAVE.conq || {})[id]; if (cq && cq.n) { const q = document.createElement('i'); q.className = 'cq'; q.textContent = '♛ CONQUERED ' + cq.n + '×' + (cq.nm ? ' · NIGHTMARE ' + cq.nm + '×' : ''); c.appendChild(q); } } if (m.big) { const nb = document.createElement('em'); nb.textContent = 'NEW · HUGE'; nb.style.left = '10px'; nb.style.right = 'auto'; nb.style.background = '#ff3355'; c.appendChild(nb); } if (SAVE.best[id]) { const e = document.createElement('em'); e.textContent = 'BEST W' + SAVE.best[id]; c.appendChild(e); }
+  for (const id in MAPS) { if (MAPS[id].arena) continue; const m = MAPS[id], c = document.createElement('button'); c.className = 'card' + (SAVE.eq.map === id ? ' on' : ''); const sw = document.createElement('div'); sw.className = 'sw'; sw.style.background = m.sw; const b = document.createElement('b'); b.textContent = m.name; const s = document.createElement('span'); s.textContent = m.desc; c.append(sw, b, s); { const cq = (SAVE.conq || {})[id]; if (cq && cq.n) { const q = document.createElement('i'); q.className = 'cq'; q.textContent = '♛ CONQUERED ' + cq.n + '×' + (cq.nm ? ' · NIGHTMARE ' + cq.nm + '×' : ''); c.appendChild(q); } } if (m.big) { const nb = document.createElement('em'); nb.textContent = 'NEW · HUGE'; nb.style.left = '10px'; nb.style.right = 'auto'; nb.style.background = '#ff3355'; c.appendChild(nb); } if (SAVE.best[id]) { const e = document.createElement('em'); e.textContent = 'BEST W' + SAVE.best[id]; c.appendChild(e); }
     c.onclick = () => { if (SAVE.eq.map === id) return; SAVE.eq.map = id; persist(); Audio_.play('ui'); buildMap(id); renderMenu(); }; ml.appendChild(c); }
   const day = 864e5, since = Date.now() - SAVE.daily.last; $('dailyBtn').disabled = since < day * .8; $('dailyBtn').textContent = since < day * .8 ? `Daily reward in ${Math.ceil((day * .8 - since) / 36e5)}h` : 'Claim daily reward';
   // armory
@@ -3289,7 +3376,7 @@ function drawRadar() {
   ctx.fillStyle = 'rgba(62,240,216,.07)'; ctx.beginPath(); ctx.moveTo(h, h); ctx.arc(h, h, h, -Math.PI / 2 - .6, -Math.PI / 2 + .6); ctx.closePath(); ctx.fill();
   // ziplines
   ctx.strokeStyle = 'rgba(122,232,255,.7)'; ctx.lineWidth = 2.5; ctx.setLineDash([6, 5]); for (const Z of world.zips) { L(Z.a.x, Z.a.z, q); L(Z.b.x, Z.b.z, q2); ctx.beginPath(); ctx.moveTo(h + q[0] / range * h, h + q[1] / range * h); ctx.lineTo(h + q2[0] / range * h, h + q2[1] / range * h); ctx.stroke(); } ctx.setLineDash([]);
-  for (const Lt of world.loot) { L(Lt.x, Lt.z, q); const c = toC(q[0], q[1]); if (!c) continue; ctx.fillStyle = Lt.it.kind === 'ammo' ? ICON.ammo : Lt.it.kind === 'drop' ? '#ff3355' : ICON.loot; const s = Lt.it.kind === 'drop' ? 13 : Lt.it.kind === 'ammo' ? 9 : 6; ctx.fillRect(c[0] - s / 2, c[1] - s / 2, s, s); }
+  for (const Lt of world.loot) { L(Lt.x, Lt.z, q); const c = toC(q[0], q[1]); if (!c) continue; ctx.fillStyle = Lt.it.kind === 'ammo' ? ICON.ammo : Lt.it.kind.endsWith('drop') ? '#ff3355' : ICON.loot; const s = Lt.it.kind.endsWith('drop') ? 13 : Lt.it.kind === 'ammo' ? 9 : 6; ctx.fillRect(c[0] - s / 2, c[1] - s / 2, s, s); }
   for (const p of pickups) { L(p.m.position.x, p.m.position.z, q); const c = toC(q[0], q[1]); if (!c) continue; ctx.fillStyle = p.kind === 'hp' ? ICON.hp : ICON.ammo; ctx.fillRect(c[0] - 4, c[1] - 4, 8, 8); }
   if (world.jeep && world.jeep.alive && !P.vehicle) { L(world.jeep.g.position.x, world.jeep.g.position.z, q); const c = toC(q[0], q[1]); if (c) { ctx.fillStyle = '#9fdc5a'; ctx.fillRect(c[0] - 7, c[1] - 5, 14, 10); } }
   if (world.train) { const tp = world.train.cars[1].g.position; L(tp.x, tp.z, q); const c = toC(q[0], q[1]); if (c) { ctx.fillStyle = '#ff8a1f'; ctx.fillRect(c[0] - 7, c[1] - 7, 14, 14); } }
@@ -3329,7 +3416,7 @@ function drawBigMap(force) {
   const cv = $('mapC'), ctx = cv.getContext('2d'), S = cv.width, B = world.bounds, sc = S / (2 * B), t = G.t, M = (x, z) => [(x + B) * sc, (z + B) * sc];
   ctx.clearRect(0, 0, S, S); ctx.drawImage(MAPUI.base, 0, 0, S, S);
   ctx.strokeStyle = ICON.zip; ctx.lineWidth = 3; ctx.setLineDash([10, 7]); for (const Z of world.zips) { const a = M(Z.a.x, Z.a.z), b = M(Z.b.x, Z.b.z); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); } ctx.setLineDash([]);
-  for (const Lt of world.loot) { const p = M(Lt.x, Lt.z); ctx.fillStyle = Lt.it.kind === 'ammo' ? ICON.ammo : Lt.it.kind === 'drop' ? '#ff3355' : ICON.loot; const s = Lt.it.kind === 'drop' ? 14 : Lt.it.kind === 'ammo' ? 8 : 5; ctx.fillRect(p[0] - s / 2, p[1] - s / 2, s, s); }
+  for (const Lt of world.loot) { const p = M(Lt.x, Lt.z); ctx.fillStyle = Lt.it.kind === 'ammo' ? ICON.ammo : Lt.it.kind.endsWith('drop') ? '#ff3355' : ICON.loot; const s = Lt.it.kind.endsWith('drop') ? 14 : Lt.it.kind === 'ammo' ? 8 : 5; ctx.fillRect(p[0] - s / 2, p[1] - s / 2, s, s); }
   for (const pk of pickups) { const p = M(pk.m.position.x, pk.m.position.z); ctx.fillStyle = pk.kind === 'hp' ? ICON.hp : ICON.ammo; ctx.fillRect(p[0] - 4, p[1] - 4, 8, 8); }
   if (world.jeep && world.jeep.alive) { const p = M(world.jeep.g.position.x, world.jeep.g.position.z); ctx.fillStyle = '#9fdc5a'; ctx.fillRect(p[0] - 7, p[1] - 5, 14, 10); }
   for (const c of AIR.planes) { const p = M(c.g.position.x, c.g.position.z); ctx.fillStyle = '#fff'; ctx.font = 'bold 20px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('✈', p[0], p[1] + 6); }
@@ -3370,13 +3457,13 @@ async function netJoin(code, asHost) {
   try { r = await NET.room.join('bob-' + code.toLowerCase()); } catch (e) { toast('Could not join squad (' + (e && e.code || 'error') + ')'); return; }
   NET.r = r; NET.code = code; NET.host = asHost; NET.hostSeen = performance.now();
   const err = e => { if (e && e.code) { toast('Squad connection lost'); netLeave(); } };
-  NET.unsub = [r.onPeers(onPeers, err), r.on('start', onStart, err), r.on('hit', onHit, err), r.on('dmg', onDmg, err), r.on('kill', onKill, err), r.on('end', onEnd, err), r.on('rtc', onRtc, err), r.on('chat', onChat, err), r.on('pvphit', onPvpHit, err), r.on('pvpkill', onPvpKill, err), r.on('pvpend', onPvpEnd, err)];
+  NET.unsub = [r.onPeers(onPeers, err), r.on('start', onStart, err), r.on('hit', onHit, err), r.on('dmg', onDmg, err), r.on('kill', onKill, err), r.on('end', onEnd, err), r.on('rtc', onRtc, err), r.on('chat', onChat, err), r.on('pvphit', onPvpHit, err), r.on('pvpkill', onPvpKill, err), r.on('pvpend', onPvpEnd, err), r.on('pvploot', onPvpLoot, err)];
   netPresence(true); Audio_.play('ui'); renderOnline();
   if (!asHost) setTimeout(() => { if (NET.r === r && !NET.hostPeer()) toast('No squad host found with code ' + code + ' yet — check the code', 3500); }, 4000);
 }
 async function netLeave() {
   vcCloseAll(); LOBBY.rd = false; LOBBY.cdEnd = 0; for (const h of LOBBY.mates.values()) if (h.rig && h.rig.g.parent) h.rig.g.parent.remove(h.rig.g); LOBBY.mates.clear(); LOBBY.me = null; LOBBY.view = true;
-  const r = NET.r; NET.unsub.forEach(u => { try { u(); } catch (e) {} }); NET.unsub = []; NET.r = null; NET.code = ''; NET.host = false; NET.on = false; NET.peers = []; NET.list = []; PVP.on = false;
+  const r = NET.r; NET.unsub.forEach(u => { try { u(); } catch (e) {} }); NET.unsub = []; NET.r = null; NET.code = ''; NET.host = false; NET.on = false; NET.peers = []; NET.list = []; PVP.on = false; PVP.teams = {};
   for (const rp of NET.rem.values()) if (rp.rig && rp.rig.g.parent) rp.rig.g.parent.remove(rp.rig.g); NET.rem.clear();
   if (r) { try { await r.leave(); } catch (e) {} } renderOnline();
 }
@@ -3390,13 +3477,13 @@ let roT = 0; function renderOnlineSoon() { if (roT) return; roT = setTimeout(() 
 function netPresence(force) {
   if (!NET.r) return; const inMatch = NET.on && (G.state === 'play' || G.state === 'paused');
   const o = { n: NET.nick(), h: NET.host ? 1 : 0, st: inMatch ? 'play' : 'lobby', mp: inMatch ? G.map : SAVE.eq.map, cs: SAVE.eq.cs, rd: LOBBY.rd ? 1 : 0, em: EMO.cur, es: EMO.seq, pf: profPacket(), cd: NET.host && LOBBY.cdEnd ? Math.max(0, Math.round((LOBBY.cdEnd - performance.now()) / 100) / 10) : 0, tm: PVP.pref };
-  if (NET.host) { const c = inMatch ? (PVP.on ? PVP : { md: 'squad', kl: 0, tl: 0 }) : pvpCfg(); o.md = c.md; o.kl = c.kl; o.tl = c.tl; }
+  if (NET.host) { const c = inMatch ? (PVP.on ? PVP : { md: 'squad', rw: 0, ar: '' }) : pvpCfg(); o.md = c.md; o.rw = c.rw; o.ar = c.ar; }
   if (inMatch) {
     const r2 = v => Math.round(v * 100) / 100;
     Object.assign(o, { x: r2(P.pos.x), y: r2(P.pos.y), z: r2(P.pos.z), yw: r2(P.yaw), pt: r2(P.pitch), hp: Math.ceil(P.hp), sh: Math.ceil(P.sh), vc: VOICE.mic ? 1 : 0, fl: P.jetting ? 1 : P.hook && !P.hook.latched ? 2 : 0, al: P.alive ? 1 : 0, w: curId(), sf: NET.sf % 1000, zp: P.zip ? 1 : 0, vh: P.vehicle ? 1 : 0, pk: PVP.on ? PVP.k : null, pd: PVP.on ? PVP.d : null });
-    if (NET.host && PVP.on) { o.ps = [PVP.sc[0], PVP.sc[1], Math.round(PVP.left)]; o.tms = PVP.teams; } else o.ps = o.tms = null;
+    if (NET.host && PVP.on) { o.rs = pvpRsPacket(); o.tms = PVP.teams; } else o.rs = o.tms = null;
     if (NET.host) { o.wv = G.wave; o.lf = G.queue.length + G.alive; const en = []; for (const e of enemies) { if (e.proxy || (!e.alive && e.deadT > 1.2)) continue; if (en.length >= 30) break; en.push([e.nid, ETYPES.indexOf(e.type), Math.round(e.pos.x * 10), Math.round(e.pos.y * 10), Math.round(e.pos.z * 10), Math.round(e.g.rotation.y * 100), Math.round(clamp(e.hp / e.maxHp, 0, 1) * 100), e.alive ? 1 : 0, (e.fc || 0) % 100, e.stunT > 0 ? 1 : 0]); } o.en = en; }
-  } else { o.x = o.y = o.z = o.yw = o.pt = o.hp = o.sh = o.vc = o.fl = o.al = o.w = o.sf = o.zp = o.vh = o.wv = o.lf = o.en = o.pk = o.pd = o.ps = o.tms = null; }
+  } else { o.x = o.y = o.z = o.yw = o.pt = o.hp = o.sh = o.vc = o.fl = o.al = o.w = o.sf = o.zp = o.vh = o.wv = o.lf = o.en = o.pk = o.pd = o.rs = o.tms = null; if (NET.host && o.md !== 'squad') o.tms = PVP.teams; }
   NET.r.presence(o).catch(() => {});
 }
 function netTick(dt) {
@@ -3526,72 +3613,144 @@ function respawnSelf() {
   P.pos.set(x, GY(x, z) + .2, z); P.vel.set(0, 0, 0); P.alive = true; P.hp = 100; P.sh = shieldMax(); hide('downed'); banner('BACK IN THE FIGHT', 'Stick with your squad'); hudCache = {};
 }
 /* =========================================================
-   CUSTOM MATCHES — 1 VS 1 DUEL and TEAM VS TEAM (player vs player)
+   CUSTOM MATCH — 1 VS 1 and 2 VS 2 clash rounds in small arenas
+   Host picks the mode, arena and who is on which team. Every round:
+   10 s preparation → fight (last team standing wins) → next round.
+   Dead players spectate their team. Small loot + one supply drop per round.
    The shooter's game decides hits and sends them to the victim; the victim
-   applies the damage and announces its own death; the host keeps the score.
+   applies the damage and announces its own death; the host runs the rounds.
    ========================================================= */
 const PVP_MODES = ['squad', 'duel', 'team'];
-const PVP_MODE_NAME = { squad: 'SQUAD CO-OP', duel: '1 VS 1 DUEL', team: 'TEAM VS TEAM' };
-const PVP_KILLS = [3, 5, 10, 15, 20, 30], PVP_TIMES = [3, 5, 10];
+const PVP_MODE_NAME = { squad: 'SQUAD CO-OP', duel: '1 VS 1', team: '2 VS 2' };
+const PVP_RW = [1, 2, 3], PVP_RW_NAME = { 1: 'SINGLE ROUND', 2: 'BEST OF 3', 3: 'BEST OF 5' };
+const ARENA_IDS = ['pit', 'gully', 'court'];
 const TEAM_NAME = ['BLUE', 'RED'], TEAM_COL = ['#4aa8ff', '#ff4a5a'];
-const PVP = { on: false, md: 'squad', kl: 10, tl: 5, teams: {}, sc: [0, 0], endAt: 0, left: 0, k: 0, d: 0, pref: 0, lastBy: '', lastByT: -99, lastHead: false, respT: 0, prot: 0, killer: '', ended: false, paid: false, hitQ: new Map(), scale: .55 };
-function pvpCfg() { const c = SAVE.pvp || (SAVE.pvp = { md: 'squad', kl: 10, tl: 5 }); if (!PVP_MODES.includes(c.md)) c.md = 'squad'; if (!PVP_KILLS.includes(c.kl)) c.kl = 10; if (!PVP_TIMES.includes(c.tl)) c.tl = 5; return c; }
-function pvpLobbyMode() { if (NET.host || !NET.r) return pvpCfg(); const hp = NET.hostPres(); return { md: hp && PVP_MODES.includes(hp.md) ? hp.md : 'squad', kl: hp && fnum(hp.kl) > 0 ? fnum(hp.kl) : 10, tl: hp && fnum(hp.tl) > 0 ? fnum(hp.tl) : 5 }; }
-function pvpMaxPlayers(md) { return md === 'duel' ? 2 : md === 'team' ? 8 : 4; }
+const PVP_PREP = 10, PVP_FIGHT = 90, PVP_END = 4.5; // seconds
+const PVP_KIT = ['rifle', 'smg', 'shotgun', 'cannon', 'sniper']; // everyone fights with the same guns
+const PVP = { on: false, md: 'squad', rw: 2, ar: 'pit', teams: {}, seed: 1, phase: 4, round: 0, rdSeen: 0, sc: [0, 0], endAt: 0, left: 0, rwin: -1, dead: new Set(), taken: new Set(), k: 0, d: 0, pref: 0, lastBy: '', lastByT: -99, lastHead: false, prot: 0, killer: '', ended: false, paid: false, hitQ: new Map(), scale: .7, fightT: 0, dropN: 0, waitT: 0, dnT: 0, lastCd: -1 };
+// phases: 0 prep · 1 fight · 2 round over · 3 match over · 4 waiting for everyone to load
+function pvpCfg() { const c = SAVE.pvp || (SAVE.pvp = {}); if (!PVP_MODES.includes(c.md)) c.md = 'squad'; if (!PVP_RW.includes(c.rw)) c.rw = 2; if (!ARENA_IDS.includes(c.ar)) c.ar = 'pit'; return c; }
+function pvpLobbyMode() { if (NET.host || !NET.r) return pvpCfg(); const hp = NET.hostPres(); return { md: hp && PVP_MODES.includes(hp.md) ? hp.md : 'squad', rw: hp && PVP_RW.includes(fnum(hp.rw)) ? fnum(hp.rw) : 2, ar: hp && ARENA_IDS.includes(hp.ar) ? hp.ar : 'pit' }; }
+const pvpCap = md => md === 'duel' ? 1 : 2; // players per team
+function pvpMaxPlayers(md) { return md === 'duel' ? 2 : md === 'team' ? 4 : 4; }
 function teamOf(peer) { const t = PVP.teams[peer]; return t === 0 || t === 1 ? t : -1; }
 function myTeam() { const t = teamOf(NET.me); return t < 0 ? 0 : t; }
 function cleanTeams(src) { const t = {}; if (src && typeof src === 'object') { let n = 0; for (const k in src) { if (++n > 16) break; if (src[k] === 0 || src[k] === 1) t[String(k).slice(0, 48)] = src[k]; } } return t; }
+const pvpLocked = () => PVP.on && PVP.phase !== 1;
+function pvpLobbySync() { // keeps the team lists right in the lobby (host assigns, everyone else reads)
+  if (!NET.r) return; const md = pvpLobbyMode().md; if (md === 'squad') return;
+  if (NET.host) {
+    const ms = lobbyMembers(), ids = new Set(ms.map(m => m.id)), cap = pvpCap(md); let ch = false;
+    for (const k in PVP.teams) if (!ids.has(k)) { delete PVP.teams[k]; ch = true; }
+    const cnt = t => ms.filter(m => PVP.teams[m.id] === t).length;
+    for (const m of ms) if (PVP.teams[m.id] === undefined) { PVP.teams[m.id] = cnt(0) <= cnt(1) ? 0 : 1; ch = true; }
+    for (let t = 0; t < 2; t++) while (cnt(t) > cap && cnt(1 - t) < cap) { const mv = ms.filter(m => PVP.teams[m.id] === t && !m.me).pop() || ms.find(m => PVP.teams[m.id] === t); PVP.teams[mv.id] = 1 - t; ch = true; }
+    if (ch) netPresence();
+  } else { const hp = NET.hostPres(); if (hp && hp.tms) PVP.teams = cleanTeams(hp.tms); }
+}
+function pvpMovePlayer(id) { // host taps a player to send them to the other team (swaps if that team is full)
+  if (!NET.host) return; const md = pvpCfg().md; if (md === 'squad') return; const ms = lobbyMembers(), t = teamOf(id); if (t < 0) return;
+  const on = x => ms.filter(m => teamOf(m.id) === x);
+  if (on(1 - t).length < pvpCap(md)) PVP.teams[id] = 1 - t; else { const o = on(1 - t)[0]; if (!o) return; PVP.teams[o.id] = t; PVP.teams[id] = 1 - t; }
+  Audio_.play('ui'); renderLobbyUI(); netPresence();
+}
 function pvpPrepare() { // host, when the match starts: false = can't start, null = normal squad match
   const c = pvpCfg(); if (c.md === 'squad') return null;
-  const ms = lobbyMembers();
-  if (ms.length < 2) { toast(PVP_MODE_NAME[c.md] + ' needs at least 2 players — share the code', 3000); return false; }
-  if (c.md === 'duel' && ms.length !== 2) { toast('1 VS 1 needs exactly 2 players — pick TEAM VS TEAM for more', 3500); return false; }
-  const teams = {};
-  if (c.md === 'duel') ms.forEach((m, i) => { teams[m.id] = i === 0 ? 0 : 1; });
-  else {
-    for (const m of ms) teams[m.id] = m.tm === 1 ? 1 : 0;
-    const cnt = t => ms.filter(m => teams[m.id] === t).length;
-    for (let g = 0; g < 10 && Math.abs(cnt(0) - cnt(1)) > 1; g++) { const big = cnt(0) > cnt(1) ? 0 : 1; const mv = ms.filter(m => teams[m.id] === big && !m.me).pop() || ms.find(m => teams[m.id] === big); teams[mv.id] = 1 - big; }
-    if (teams[NET.me] !== undefined) PVP.pref = teams[NET.me];
-  }
-  return { md: c.md, kl: c.kl, tl: c.tl, teams };
+  pvpLobbySync(); const ms = lobbyMembers(), cap = pvpCap(c.md);
+  const n0 = ms.filter(m => teamOf(m.id) === 0).length, n1 = ms.filter(m => teamOf(m.id) === 1).length;
+  if (ms.length > cap * 2) { toast(PVP_MODE_NAME[c.md] + ' fits only ' + cap * 2 + ' players — ask the extra players to leave', 3500); return false; }
+  if (!n0 || !n1) { toast('Each team needs at least 1 player — tap a player to move them', 3500); return false; }
+  const teams = {}; for (const m of ms) teams[m.id] = teamOf(m.id);
+  return { md: c.md, rw: c.rw, ar: c.ar, teams, seed: 1 + (R() * 1e6 | 0) };
 }
 function pvpSetup(d) {
-  PVP.hitQ.clear(); PVP.respT = 0; PVP.prot = 0; PVP.lastBy = ''; PVP.ended = false; PVP.paid = false; PVP.k = PVP.d = 0; PVP.sc = [0, 0];
-  if (!d || !PVP_MODES.includes(d.md) || d.md === 'squad') { PVP.on = false; return; }
-  PVP.on = true; PVP.md = d.md; PVP.kl = clamp(Math.round(fnum(d.kl)) || 10, 1, 99); PVP.tl = clamp(fnum(d.tl) || 5, 1, 30); PVP.teams = cleanTeams(d.teams);
-  const left = fnum(d.left) > 0 ? fnum(d.left) : PVP.tl * 60; PVP.left = left; PVP.endAt = performance.now() + left * 1000;
-  if (Array.isArray(d.sc)) PVP.sc = [fnum(d.sc[0]), fnum(d.sc[1])];
+  PVP.hitQ.clear(); PVP.prot = 0; PVP.lastBy = ''; PVP.ended = false; PVP.paid = false; PVP.k = PVP.d = 0; PVP.sc = [0, 0]; PVP.dead = new Set(); PVP.taken = new Set(); PVP.round = 0; PVP.rdSeen = 0; PVP.phase = 4; PVP.rwin = -1; PVP.fightT = 0; PVP.dropN = 0; PVP.waitT = 0; PVP.killer = ''; PVP.endAt = 0; PVP.lastCd = -1;
+  if (!d || !PVP_MODES.includes(d.md) || d.md === 'squad' || !MAPS[d.ar] || !MAPS[d.ar].arena) { PVP.on = false; return; }
+  PVP.on = true; PVP.md = d.md; PVP.rw = clamp(Math.round(fnum(d.rw)) || 2, 1, 3); PVP.ar = d.ar; PVP.teams = cleanTeams(d.teams); PVP.seed = Math.round(fnum(d.seed)) || 1;
 }
-function pvpSpawnPoint(team) {
-  const A = world.start, B = world.bounds - 8, land = (x, z) => Math.abs(x) < B && Math.abs(z) < B && freeSpot(x, z, .7) && GY(x, z) > (world.isle ? 1.2 : -.8);
-  const far = Math.hypot(A.x, A.z) > 15, base = team === 0 ? new V3(A.x, 0, A.z) : far ? new V3(-A.x, 0, -A.z) : new V3(A.x, 0, A.z - Math.min(60, world.bounds * .6));
-  for (const f of [0, .15, .3, .45, .6, .8]) { const c = base.clone().lerp(new V3(A.x, 0, A.z), team === 0 ? 0 : f);
-    for (let k = 0; k < 14; k++) { const a = R() * 6.283, rr = k === 0 ? 0 : 1.5 + k * .8, x = c.x + Math.cos(a) * rr, z = c.z + Math.sin(a) * rr; if (land(x, z)) return new V3(x, GY(x, z) + .2, z); } }
-  return new V3(A.x + (R() - .5) * 4, GY(A.x, A.z) + .2, A.z + (R() - .5) * 4);
+function pvpSlot() { const mt = myTeam(), ids = Object.keys(PVP.teams).filter(k => PVP.teams[k] === mt).sort(); return Math.max(0, ids.indexOf(NET.me)); }
+function pvpPlaceSelf() { const t = myTeam(), p = world.arSp[t][pvpSlot() % 2]; P.pos.set(p.x, GY(p.x, p.z) + .1, p.z); P.vel.set(0, 0, 0); P.yaw = t === 0 ? Math.PI : 0; P.pitch = 0; P.hook = null; hookLine.visible = false; }
+/* ---- loot: a few small crates per round (same on every screen) + a supply drop ---- */
+function pvpLootRoll(rnd) { const t = [['med', 26], ['armor', 22], ['helmet', 16], ['ammo', 22], ['wall', 14]]; let tot = 0; t.forEach(x => tot += x[1]); let r = rnd() * tot, kind = 'ammo'; for (const x of t) { r -= x[1]; if (r <= 0) { kind = x[0]; break; } } return { kind, lvl: kind === 'armor' || kind === 'helmet' ? 2 : 1 }; }
+function pvpClearLoot() { for (const L of world.loot) world.group.remove(L.g); world.loot.length = 0; PVP.taken = new Set(); }
+function pvpSpawnLoot() { const rnd = mkRand((PVP.seed * 7919 + PVP.round * 104729) | 0), sp = world.arLoot; for (let i = 0; i < sp.length; i += 2) { const it = pvpLootRoll(rnd); for (let k = 0; k < 2 && i + k < sp.length; k++) { spawnLootCrate(sp[i + k][0], sp[i + k][1], false, { ...it }); world.loot[world.loot.length - 1].pid = i + k; } } }
+function pvpDropTick() { const T = [22, 55]; if (PVP.dropN < T.length && PVP.fightT >= T[PVP.dropN]) { const n = PVP.dropN++, x = world.arDrop[0], z = world.arDrop[1]; spawnChute(new V3(x, GY(x, z) + 26, z)); AIR.chutes[AIR.chutes.length - 1].pid = 100 + n; toast('📦 SUPPLY DROP falling in the middle of the arena!', 2800); Audio_.play('plane', .6); } }
+function pvpChutes(dt) {
+  for (let i = AIR.chutes.length - 1; i >= 0; i--) { const c = AIR.chutes[i]; c.t += dt; c.g.position.y -= 5.5 * dt; c.g.rotation.y += dt * .4; c.chute.rotation.z = Math.sin(c.t * 1.3) * .08;
+    const landY = supportY(c.g.position.x, c.g.position.z, c.g.position.y);
+    if (c.g.position.y <= landY + .45) { world.group.remove(c.g); AIR.chutes.splice(i, 1); if (!PVP.taken.has(c.pid)) { spawnLootCrate(c.g.position.x, c.g.position.z, true, { kind: 'adrop', lvl: 3 }); const L = world.loot[world.loot.length - 1]; if (L) { L.pid = c.pid; L.y = landY; L.g.position.y = landY; L.g.scale.setScalar(1.5); } }
+      for (let k = 0; k < 4; k++) smoke(tmpV.set(c.g.position.x, landY + .5, c.g.position.z), { col: 0xff3a3a, life: 5, grow: 3, size: .6, op: .5, vy: 2 }); toast('Supply drop landed — red box on your radar', 2200); } }
 }
-function pvpPlaceSelf() { const sp = pvpSpawnPoint(myTeam()); P.pos.copy(sp); P.vel.set(0, 0, 0); P.yaw = Math.atan2(sp.x, sp.z); P.pitch = 0; PVP.prot = 2.5; }
-function pvpRespawn() {
-  if (!PVP.on || G.state !== 'play') return; pvpPlaceSelf(); P.alive = true; P.hp = 100; P.sh = shieldMax(); P.hook = null; hookLine.visible = false;
-  for (const id of P.list) { P.ammo[id].mag = WEAPONS[id].mag; P.ammo[id].reserve = Math.max(P.ammo[id].reserve, WEAPONS[id].mag * 3); }
-  hide('downed'); $('specBar').classList.add('hide'); banner('BACK IN THE FIGHT', 'Spawn shield for 2 seconds'); hudCache = {}; Audio_.play('wave');
+function onPvpLoot(msg) { if (!PVP.on || !NET.on || msg.sameTab) return; const d = msg.data || {}; if (fnum(d.r) !== PVP.round) return; const id = fnum(d.id); PVP.taken.add(id); for (let i = world.loot.length - 1; i >= 0; i--) if (world.loot[i].pid === id) { const L = world.loot[i]; sparks(tmpV.set(L.x, (L.y || 0) + .6, L.z), 0xffffff, 8, 3, 1); world.group.remove(L.g); world.loot.splice(i, 1); } }
+function pvpDropGrant() { P.hp = Math.min(100, P.hp + 50); P.gear.armor = Math.max(P.gear.armor, 2); P.sh = shieldMax(); for (const id of P.list) P.ammo[id].reserve = Math.max(P.ammo[id].reserve, Math.round(WEAPONS[id].reserve * .9)); P.inv.med = Math.min(invCap('med'), P.inv.med + 1); P.inv.wall = Math.min(invCap('wall'), P.inv.wall + 1); banner('SUPPLY DROP', 'Health · armor · ammo · medkit'); Audio_.play('wave'); }
+/* ---- rounds ---- */
+function pvpResetRound() { // everybody starts every round the same: full health, same guns, own spawn
+  P.alive = true; P.hp = 100; P.gear = { armor: 0, helmet: 0, pack: 0 }; P.att = {}; P.sh = shieldMax(); P.healT = 0; P.boostT = 0; P.lastHit = -99; P.vehicle = null; P.onTrain = false; P.zip = null;
+  P.list = PVP_KIT.slice(); P.ammo = {}; for (const id of P.list) P.ammo[id] = { mag: WEAPONS[id].mag, reserve: WEAPONS[id].reserve }; P.cur = 0; P.reloadT = 0; P.switchT = .45; P.inv = { med: 2, wall: 2, mine: 0, bomb: 1, boost: 0 };
+  for (const w of world.walls) if (w.alive) breakWall(w); projs.length = 0; PRJ.length = 0; for (const c of AIR.chutes) world.group.remove(c.g); AIR.chutes.length = 0;
+  pvpPlaceSelf(); hide('downed'); $('specBar').classList.add('hide'); SPEC.cur = null; mouseDown = false; touch.fireIds.clear(); PVP.dnT = 0;
+  pvpClearLoot(); pvpSpawnLoot(); PVP.fightT = 0; PVP.dropN = 0; PVP.killer = ''; PVP.dead.clear(); updateSlots(); hudCache = {};
+}
+function pvpEnter(ph, rd) {
+  PVP.phase = ph;
+  if (ph <= 1 && rd > 0 && PVP.rdSeen !== rd) { PVP.rdSeen = rd; pvpResetRound(); }
+  if (G.state !== 'play') return;
+  if (ph === 0) { banner('ROUND ' + rd, 'Get ready · fight starts in ' + PVP_PREP + ' seconds'); Audio_.play('wave'); }
+  else if (ph === 1) { banner('FIGHT!', 'Last team standing wins the round'); Audio_.play('shield'); PVP.fightT = 0; }
+  else if (ph === 2) { const mt = myTeam(); banner(PVP.rwin < 0 ? 'ROUND DRAW' : PVP.rwin === mt ? 'ROUND WON' : 'ROUND LOST', TEAM_NAME[0] + ' ' + PVP.sc[0] + ' – ' + PVP.sc[1] + ' ' + TEAM_NAME[1]); Audio_.play(PVP.rwin === mt ? 'coin' : 'hurt'); }
+  else if (ph === 3) gameOver();
+}
+function pvpHostAlive(t) { let n = 0; for (const k in PVP.teams) { if (PVP.teams[k] !== t || PVP.dead.has(k)) continue; if (k === NET.me || NET.peers.some(p => p.peer === k)) n++; } return n; }
+function pvpHostHp(t) { let s = 0; for (const k in PVP.teams) { if (PVP.teams[k] !== t || PVP.dead.has(k)) continue; if (k === NET.me) s += P.hp + P.sh; else { const p = NET.peers.find(q => q.peer === k); if (p && p.presence) s += fnum(p.presence.hp) + fnum(p.presence.sh); } } return s; }
+function pvpAlive(t) { let n = 0; for (const k in PVP.teams) { if (PVP.teams[k] !== t) continue; if (k === NET.me) { if (P.alive) n++; } else { const rp = NET.rem.get(k); if (rp && rp.al && NET.list.includes(rp)) n++; } } return n; }
+function pvpSetPhase(ph, secs) { PVP.phase = ph; PVP.endAt = performance.now() + secs * 1000; pvpEnter(ph, PVP.round); netPresence(); }
+function pvpHostEnd() { if (PVP.ended) return; PVP.ended = true; PVP.phase = 3; PVP.endAt = performance.now(); netPresence(); netEmit('pvpend', { sc: PVP.sc }); gameOver(); }
+function pvpHostTick(dt) {
+  if (PVP.ended) return; const now = performance.now();
+  if (PVP.phase === 4) {
+    PVP.waitT += dt; const miss = Object.keys(PVP.teams).filter(k => k !== NET.me && !NET.peers.some(q => q.peer === k && q.presence && q.presence.st === 'play'));
+    if (!miss.length || PVP.waitT > 25) { for (const k of miss) delete PVP.teams[k]; if (!pvpHostAlive(0) || !pvpHostAlive(1)) { pvpHostEnd(); return; } PVP.round = 1; pvpSetPhase(0, PVP_PREP); }
+  } else if (PVP.phase === 0) { if (now >= PVP.endAt) pvpSetPhase(1, PVP_FIGHT); }
+  else if (PVP.phase === 1) {
+    const a0 = pvpHostAlive(0), a1 = pvpHostAlive(1);
+    if (!a0 || !a1 || now >= PVP.endAt) { let w = -1; if (a0 !== a1) w = a0 > a1 ? 0 : 1; else if (a0 && a1) { const h0 = pvpHostHp(0), h1 = pvpHostHp(1); if (Math.abs(h0 - h1) > 1) w = h0 > h1 ? 0 : 1; } PVP.rwin = w; if (w >= 0) PVP.sc[w]++; pvpSetPhase(2, PVP_END); }
+  } else if (PVP.phase === 2 && now >= PVP.endAt) {
+    if (PVP.sc[0] >= PVP.rw || PVP.sc[1] >= PVP.rw || PVP.round >= PVP.rw * 2 + 1 || PVP.rw === 1) pvpHostEnd(); else { PVP.round++; PVP.dead.clear(); pvpSetPhase(0, PVP_PREP); }
+  }
+}
+function pvpClientSync() {
+  const hp = NET.hostPres(); if (!hp) return; if (hp.tms) PVP.teams = cleanTeams(hp.tms);
+  if (!Array.isArray(hp.rs)) return; const rs = hp.rs, ph = fnum(rs[0]), rd = fnum(rs[1]);
+  PVP.sc = [fnum(rs[2]), fnum(rs[3])]; PVP.rwin = rs.length > 5 ? fnum(rs[5]) : -1; PVP.endAt = performance.now() + fnum(rs[4]) * 1000;
+  if (ph !== PVP.phase || rd !== PVP.round) { PVP.round = rd; pvpEnter(ph, rd); }
+}
+const pvpRsPacket = () => [PVP.phase, PVP.round, PVP.sc[0], PVP.sc[1], Math.round(Math.max(0, (PVP.endAt - performance.now()) / 1000) * 10) / 10, PVP.rwin];
+function pvpTick(dt) {
+  if (NET.host) pvpHostTick(dt); else pvpClientSync();
+  if (G.state !== 'play') return;
+  PVP.prot = Math.max(0, PVP.prot - dt); PVP.left = Math.max(0, (PVP.endAt - performance.now()) / 1000);
+  if (PVP.dnT > 0) { PVP.dnT -= dt; if (PVP.dnT <= 0) hide('downed'); }
+  if (PVP.phase === 1) { PVP.fightT += dt; pvpDropTick(); } pvpChutes(dt);
+  const mt = myTeam(), L = Math.ceil(PVP.left), ph = PVP.phase;
+  setTxt('waveTxt', PVP.md === 'duel' ? 'YOU ' + PVP.sc[mt] + ' – ' + PVP.sc[1 - mt] + ' RIVAL' : TEAM_NAME[0] + ' ' + PVP.sc[0] + ' – ' + PVP.sc[1] + ' ' + TEAM_NAME[1]);
+  setTxt('leftTxt', 'ROUND ' + Math.max(1, PVP.round) + (ph === 1 ? ' · ' + (L / 60 | 0) + ':' + String(L % 60).padStart(2, '0') : ph === 2 ? ' · OVER' : '') + ' · ALIVE ' + pvpAlive(mt) + ' vs ' + pvpAlive(1 - mt) + ' · K ' + PVP.k + ' / D ' + PVP.d);
+  const cd = $('pvpCd'); cd.classList.toggle('hide', !(ph === 0 || ph === 4));
+  if (ph === 0) { const n = Math.max(1, L); setTxt('pvpCdB', n); setTxt('pvpCdS', 'ROUND ' + PVP.round + ' · PREPARE — YOU CAN\'T MOVE YET'); if (n !== PVP.lastCd) { PVP.lastCd = n; if (n <= 3) Audio_.play('ui'); } } else if (ph === 4) { setTxt('pvpCdB', '…'); setTxt('pvpCdS', 'WAITING FOR EVERYONE TO LOAD'); }
 }
 function pvpDie() {
   if (P.vehicle) exitJeep(); if (P.zip) leaveZip(); P.onTrain = false; mouseDown = false; touch.fireIds.clear(); if (P.hook) { P.hook = null; hookLine.visible = false; }
   const by = PVP.lastBy && G.t - PVP.lastByT < 8 ? PVP.lastBy : '';
-  PVP.d++; PVP.killer = by; PVP.respT = 4;
-  netEmit('pvpkill', { by, h: by && PVP.lastHead ? 1 : 0 }); pvpCountKill(by, NET.me, by && PVP.lastHead);
-  show('downed'); setTxt('dnB', 'ELIMINATED'); setTxt('dnS', by ? 'BY ' + NET.nameOf(by).toUpperCase() : 'RESPAWNING…');
-  banner('ELIMINATED', by ? 'by ' + NET.nameOf(by) : 'Respawning soon'); Audio_.play('shield');
+  PVP.d++; PVP.killer = by; PVP.dead.add(NET.me);
+  netEmit('pvpkill', { by, h: by && PVP.lastHead ? 1 : 0, r: PVP.round }); pvpCountKill(by, NET.me, by && PVP.lastHead);
+  show('downed'); setTxt('dnB', 'ELIMINATED'); setTxt('dnS', by ? 'BY ' + NET.nameOf(by).toUpperCase() : 'YOU DIED'); PVP.dnT = 2.6; Audio_.play('shield');
 }
 function pvpCountKill(by, victim, head) {
   const vn = victim === NET.me ? 'you' : NET.nameOf(victim);
   if (by && by === NET.me && victim !== NET.me) { PVP.k++; G.kills++; if (head) G.hs++; const c = head ? 30 : 20; G.coins += c; G.xp += 30; pickMsg('ELIMINATED ' + vn.toUpperCase() + ' +' + c, '#ff5a3a'); hitMarker('k'); Audio_.play('hs'); }
   feed(by ? (by === NET.me ? 'You' : NET.nameOf(by)) + ' eliminated ' + vn : (victim === NET.me ? 'You were' : vn + ' was') + ' eliminated', !!head);
-  if (NET.host) { const t = teamOf(by), tv = teamOf(victim); if (by && by !== victim && t >= 0 && t !== tv) PVP.sc[t]++; }
 }
 function pvpHitRemote(rp, dmg, point, head) { // I hit a player from the other team
-  if (!PVP.on || !rp || !rp.foe || !rp.al || G.state !== 'play') return;
+  if (!PVP.on || PVP.phase !== 1 || !rp || !rp.foe || !rp.al || G.state !== 'play') return;
   dmg = Math.min(110, dmg * PVP.scale); if (!(dmg >= .5)) return;
   const q = PVP.hitQ.get(rp.peer) || [0, false]; q[0] += dmg; q[1] = q[1] || !!head; PVP.hitQ.set(rp.peer, q);
   if (point) { dmgNum(point, Math.round(dmg), head ? '#ffb02f' : '#ff9a9a'); sparks(point, 0xff3344, head ? 12 : 6, 5, 1); }
@@ -3602,13 +3761,13 @@ function pvpFlush() {
   netEmit('pvphit', { h: h.slice(0, 8), x: Math.round(P.pos.x * 10) / 10, z: Math.round(P.pos.z * 10) / 10 });
 }
 function onPvpHit(msg) {
-  if (!PVP.on || !NET.on || msg.sameTab || G.state !== 'play' || !P.alive) return;
+  if (!PVP.on || !NET.on || msg.sameTab || G.state !== 'play' || !P.alive || PVP.phase !== 1) return;
   const ta = teamOf(msg.peer); if (ta < 0 || ta === myTeam()) return; // no friendly fire
   const d = msg.data || {}; if (!Array.isArray(d.h)) return;
   for (const it of d.h.slice(0, 8)) { if (!Array.isArray(it) || it[0] !== NET.me || PVP.prot > 0 || !P.alive) continue; PVP.lastBy = msg.peer; PVP.lastByT = G.t; PVP.lastHead = !!it[2]; damagePlayer(clamp(fnum(it[1]), 0, 150), new V3(fnum(d.x), 0, fnum(d.z))); }
 }
-function onPvpKill(msg) { if (!PVP.on || !NET.on || msg.sameTab || G.state !== 'play') return; const d = msg.data || {}; pvpCountKill(typeof d.by === 'string' ? d.by.slice(0, 48) : '', msg.peer, !!d.h); }
-function onPvpEnd(msg) { if (!PVP.on || !fromHost(msg)) return; const d = msg.data || {}; if (Array.isArray(d.sc)) PVP.sc = [fnum(d.sc[0]), fnum(d.sc[1])]; if (G.state === 'play') gameOver(); }
+function onPvpKill(msg) { if (!PVP.on || !NET.on || msg.sameTab || G.state !== 'play') return; const d = msg.data || {}; if (NET.host && fnum(d.r) === PVP.round && PVP.phase === 1) PVP.dead.add(msg.peer); pvpCountKill(typeof d.by === 'string' ? d.by.slice(0, 48) : '', msg.peer, !!d.h); }
+function onPvpEnd(msg) { if (!PVP.on || !fromHost(msg)) return; const d = msg.data || {}; if (Array.isArray(d.sc)) PVP.sc = [fnum(d.sc[0]), fnum(d.sc[1])]; PVP.phase = 3; if (G.state === 'play') gameOver(); }
 function pvpNear(pp, rad) { if (!PVP.on) return false; for (const rp of NET.list) { if (!rp.foe || !rp.al) continue; const cy = clamp(pp.y, rp.pos.y, rp.pos.y + 1.8); if (Math.hypot(pp.x - rp.pos.x, pp.y - cy, pp.z - rp.pos.z) < .5 + rad) return true; } return false; }
 function pvpBlast(pos, radius, dmg) { if (!PVP.on) return; for (const rp of NET.list) { if (!rp.foe || !rp.al) continue; const d = rp.pos.distanceTo(pos); if (d < radius + .5) pvpHitRemote(rp, dmg * (1 - d / (radius + .5)), rp.pos.clone().setY(rp.pos.y + 1.4), false); } }
 function pvpRig(rp) { // team colours, name tags and hit boxes on other players
@@ -3621,30 +3780,24 @@ function pvpRig(rp) { // team colours, name tags and hit boxes on other players
   if (rp.cone) rp.cone.material.color.setHex(foe ? 0xff3344 : 0x5ab4ff);
   for (const m of rp.rig.hit) m.userData.enemy = foe ? rp.fe : null;
 }
-function pvpTick(dt) {
-  if (NET.host) {
-    for (const p of NET.peers) { if (p.isMe && p.sameTab) continue; const pr = p.presence || {}; if (pr.st === 'play' && teamOf(p.peer) < 0) { const n0 = Object.values(PVP.teams).filter(v => v === 0).length, n1 = Object.values(PVP.teams).filter(v => v === 1).length; PVP.teams[p.peer] = n0 <= n1 ? 0 : 1; } }
-    for (const k in PVP.teams) if (k !== NET.me && !NET.peers.find(p => p.peer === k)) delete PVP.teams[k];
-    PVP.left = Math.max(0, (PVP.endAt - performance.now()) / 1000);
-    if (!PVP.ended && (PVP.sc[0] >= PVP.kl || PVP.sc[1] >= PVP.kl || PVP.left <= 0)) { PVP.ended = true; netPresence(); netEmit('pvpend', { sc: PVP.sc }); gameOver(); return; }
-  } else { const hp = NET.hostPres(); if (hp) { if (hp.tms) PVP.teams = cleanTeams(hp.tms); if (Array.isArray(hp.ps)) { PVP.sc = [fnum(hp.ps[0]), fnum(hp.ps[1])]; PVP.left = fnum(hp.ps[2]); } } }
-  PVP.prot = Math.max(0, PVP.prot - dt);
-  if (!P.alive && PVP.respT > 0) { PVP.respT -= dt; setTxt('dnS', (PVP.killer ? 'BY ' + NET.nameOf(PVP.killer).toUpperCase() + ' · ' : '') + 'RESPAWN IN ' + Math.max(1, Math.ceil(PVP.respT))); if (PVP.respT <= 0) pvpRespawn(); }
-  const mt = myTeam(), L = Math.max(0, PVP.left | 0);
-  setTxt('waveTxt', PVP.md === 'duel' ? 'YOU ' + PVP.sc[mt] + ' – ' + PVP.sc[1 - mt] + ' RIVAL' : TEAM_NAME[0] + ' ' + PVP.sc[0] + ' – ' + PVP.sc[1] + ' ' + TEAM_NAME[1]);
-  setTxt('leftTxt', (L / 60 | 0) + ':' + String(L % 60).padStart(2, '0') + ' · FIRST TO ' + PVP.kl + ' · K ' + PVP.k + ' / D ' + PVP.d + (PVP.md === 'team' ? ' · TEAM ' + TEAM_NAME[mt] : ''));
-}
-function pvpDeadCam(dt) {
-  const k = PVP.killer && NET.rem.get(PVP.killer); $('specBar').classList.add('hide');
-  camera.position.lerp(tmpV.set(P.pos.x + 3, P.pos.y + 4.5, P.pos.z + 4), 1 - Math.exp(-3 * dt));
-  if (k && k.rig) camera.lookAt(k.pos.x, k.pos.y + 1.2, k.pos.z); else camera.lookAt(P.pos.x, P.pos.y + .5, P.pos.z);
+function pvpDeadCam(dt) { // after you die you watch your team (or the rivals once your team is out)
+  const mt = myTeam(), bar = $('specBar'); let c = NET.list.filter(r => r.al && teamOf(r.peer) === mt), foe = false; if (!c.length) { c = NET.list.filter(r => r.al); foe = true; }
+  if (!c.length) { SPEC.cur = null; bar.classList.remove('hide'); setTxt('specName', '—'); setTxt('specInfo', 'ROUND OVER'); camera.position.lerp(tmpV.set(P.pos.x, P.pos.y + 5, P.pos.z + 5), 1 - Math.exp(-3 * dt)); camera.lookAt(P.pos.x, P.pos.y + .5, P.pos.z); return; }
+  SPEC.i = ((SPEC.i % c.length) + c.length) % c.length; const m = c[SPEC.i];
+  if (SPEC.cur !== m) { SPEC.cur = m; SPEC.yaw = m.yw; SPEC.pitch = m.pt; camera.position.set(m.pos.x, m.pos.y + 1.62, m.pos.z); }
+  let dy = m.yw - SPEC.yaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy)); SPEC.yaw += dy * Math.min(1, dt * 16); SPEC.pitch = damp(SPEC.pitch, m.pt, 16, dt);
+  const fx = -Math.sin(SPEC.yaw), fz = -Math.cos(SPEC.yaw);
+  if (SPEC.third) { camera.position.lerp(tmpV.set(m.pos.x - fx * 4.6 + Math.cos(SPEC.yaw) * .9, m.pos.y + 2.4 - SPEC.pitch * 1.5, m.pos.z - fz * 4.6 - Math.sin(SPEC.yaw) * .9), 1 - Math.exp(-9 * dt)); camera.rotation.set(SPEC.pitch * .8 - .12, SPEC.yaw, 0); }
+  else { camera.position.lerp(tmpV.set(m.pos.x, m.pos.y + 1.62, m.pos.z), 1 - Math.exp(-20 * dt)); camera.rotation.set(SPEC.pitch, SPEC.yaw, 0); }
+  camera.fov = damp(camera.fov, SAVE.set.fov, 8, dt); camera.updateProjectionMatrix();
+  bar.classList.remove('hide'); setTxt('specName', m.nick); setTxt('specInfo', `HP ${Math.max(0, m.hp | 0)} · ${foe ? 'RIVAL' : 'TEAMMATE'} ${c.length > 1 ? (SPEC.i + 1) + ' / ' + c.length : ''} · ${SPEC.third ? '3RD PERSON' : 'THEIR EYES'}`);
 }
 function pvpOverText() {
   const mt = myTeam(), a = PVP.sc[mt], b = PVP.sc[1 - mt], win = a > b ? 1 : a < b ? -1 : 0;
   if (win > 0 && !PVP.paid) { PVP.paid = true; G.coins += 100; G.xp += 150; }
   $('overT').textContent = win > 0 ? 'VICTORY' : win < 0 ? 'DEFEAT' : 'DRAW';
-  $('overS').textContent = (PVP.md === 'duel' ? '1 VS 1 DUEL' : 'TEAM ' + TEAM_NAME[mt]) + ' · ' + a + ' – ' + b + ' · ' + PVP.k + ' kills / ' + PVP.d + ' deaths' + (win > 0 ? ' · +100 win bonus' : '');
-  $('oWave').textContent = a + '–' + b; setTxt('oWaveL', 'SCORE'); $('oCoins').textContent = G.coins; $('doubleBtn').classList.toggle('hide', !Platform.hasRewarded() || G.coins < 20);
+  $('overS').textContent = PVP_MODE_NAME[PVP.md] + ' · ' + MAPS[G.map].name + ' · rounds ' + a + ' – ' + b + ' · ' + PVP.k + ' kills / ' + PVP.d + ' deaths' + (win > 0 ? ' · +100 win bonus' : '');
+  $('oWave').textContent = a + '–' + b; setTxt('oWaveL', 'ROUNDS'); $('oCoins').textContent = G.coins; $('doubleBtn').classList.toggle('hide', !Platform.hasRewarded() || G.coins < 20);
 }
 function renderOnline() {
   const has = !!$('olInfo'); if (!has) return;
@@ -3656,7 +3809,7 @@ function renderOnline() {
   const L = $('olList'); L.textContent = ''; const ps = NET.peers.slice(0, 8);
   for (const p of ps) { const pr = p.presence || {}; const d = el('div', 'item on'); const nm = cleanName(pr.n) || 'Joining…'; d.append(el('b', '', nm + (p.isMe && p.sameTab ? ' (you)' : '')), el('small', pr.h === 1 ? 'r-Legendary' : 'r-Rare', (pr.h === 1 ? 'HOST · ' : '') + (pr.st === 'play' ? 'IN MATCH' : 'IN LOBBY') + (p.guest ? ' · GUEST' : ''))); L.appendChild(d); }
   const hostP = NET.hostPres(); const live = hostP && hostP.st === 'play';
-  $('olStart').classList.toggle('hide', !NET.host); $('olStart').textContent = 'Start ' + (pvpCfg().md === 'squad' ? 'squad match' : PVP_MODE_NAME[pvpCfg().md].toLowerCase()) + ' · ' + MAPS[SAVE.eq.map].name;
+  $('olStart').classList.toggle('hide', !NET.host); $('olStart').textContent = 'Start ' + (pvpCfg().md === 'squad' ? 'squad match' : PVP_MODE_NAME[pvpCfg().md].toLowerCase()) + ' · ' + MAPS[pvpCfg().md === 'squad' ? SAVE.eq.map : pvpCfg().ar].name;
   $('olJoinLive').classList.toggle('hide', NET.host || !live);
   $('olHint').textContent = NET.host ? (ps.length > 4 ? 'Squads play best with up to 4 players.' : 'Share the code. When everyone is here, press start.') : live ? 'Your squad is already fighting — jump in!' : hostP ? 'Waiting for the host to start the match…' : 'Looking for the host…';
 }
@@ -4067,7 +4220,7 @@ function fireRocket(w, muzzleW) {
   PRJ.push({ k: 'rocket', g, v: dirV.clone().multiplyScalar(70), t: 0, dmg: w.dmg * BMUL() }); Audio_.play('rl');
 }
 function throwBomb() {
-  if (!P.alive || P.vehicle) return; if (P.inv.bomb <= 0) { pickMsg('No bombs — airdrops and crates have more', '#8a9aa8'); return; }
+  if (!P.alive || P.vehicle || pvpLocked()) return; if (P.inv.bomb <= 0) { pickMsg('No bombs — airdrops and crates have more', '#8a9aa8'); return; }
   P.inv.bomb--; hudCache = {}; camera.getWorldDirection(dirV);
   const g = new THREE.Mesh(SPH(.16), std({ color: 0x2a3424, rough: .5, metal: .4 })); const led = new THREE.Mesh(SPH(.05), new THREE.MeshBasicMaterial({ color: 0xff2a2a, toneMapped: false })); led.position.y = .14; g.add(led);
   g.position.copy(camera.position).addScaledVector(dirV, .7); world.group.add(g);
@@ -4095,6 +4248,7 @@ function updatePRJ(dt) {
 
 /* ---------------- booster ---------------- */
 function useBoost() {
+  if (PVP.on) return;
   if (P.inv.boost <= 0) { pickMsg('No boosters — buy in the store or find in airdrops', '#8a9aa8'); return; }
   if (P.boostT > 0) return; P.inv.boost--; P.boostT = 12; P.healT = 3; P.sh = shieldMax(); hudCache = {}; Audio_.play('boost'); pickMsg('BOOSTER! +speed +damage +heal', '#3dff7a'); $('boostFx').classList.remove('hide');
 }
@@ -4116,6 +4270,7 @@ function hookAssist(dir, maxD, beforeD) { // snap the hook onto a big villain ne
   return best;
 }
 function hookFire() {
+  if (PVP.on) return;
   if (P.hook) { hookRelease(true); return; }
   if (!P.alive || P.vehicle || P.onTrain) return; if (P.gas < 8) { pickMsg('Grapple gas empty — land to refill', '#8a9aa8'); return; }
   camera.getWorldDirection(dirV); rebuildTargets(); ray.set(camera.position, dirV); ray.far = 130;
@@ -4448,8 +4603,8 @@ function lobbyRig(holder, cs) {
 }
 function lobbyMembers() {
   const out = []; const meP = NET.peers.find(p => p.isMe && p.sameTab);
-  out.push({ id: NET.me || 'me', me: true, nick: NET.nick(), cs: SAVE.eq.cs, rd: LOBBY.rd, host: NET.host, pf: profPacket(), em: EMO.cur, es: EMO.seq, tm: PVP.pref });
-  for (const p of NET.peers) { if (p === meP || p.peer === NET.me) continue; const pr = p.presence || {}; if (!pr.n) continue; out.push({ id: p.peer, me: false, nick: cleanName(pr.n) || 'Friend', cs: CHAR_SKINS[pr.cs] ? pr.cs : 'recruit', rd: !!pr.rd, host: pr.h === 1, pf: pr.pf, em: typeof pr.em === 'string' ? pr.em : '', es: fnum(pr.es), st: pr.st, guest: !!p.guest, tm: fnum(pr.tm) === 1 ? 1 : 0 }); }
+  out.push({ id: NET.me || 'me', me: true, nick: NET.nick(), cs: SAVE.eq.cs, rd: LOBBY.rd, host: NET.host, pf: profPacket(), em: EMO.cur, es: EMO.seq, tm: Math.max(0, teamOf(NET.me)) });
+  for (const p of NET.peers) { if (p === meP || p.peer === NET.me) continue; const pr = p.presence || {}; if (!pr.n) continue; out.push({ id: p.peer, me: false, nick: cleanName(pr.n) || 'Friend', cs: CHAR_SKINS[pr.cs] ? pr.cs : 'recruit', rd: !!pr.rd, host: pr.h === 1, pf: pr.pf, em: typeof pr.em === 'string' ? pr.em : '', es: fnum(pr.es), st: pr.st, guest: !!p.guest, tm: Math.max(0, teamOf(p.peer)) }); }
   return out.slice(0, 8);
 }
 function lobbyTick(dt) {
@@ -4461,6 +4616,7 @@ function lobbyTick(dt) {
   }
   $('lobbyBack').classList.toggle('hide', !(NET.r && G.state === 'menu' && !LOBBY.view));
   if (!want) return;
+  pvpLobbySync();
   const ms = lobbyMembers(), n = ms.length, seen = new Set();
   ms.forEach((m, i) => {
     seen.add(m.id); let h = LOBBY.mates.get(m.id); if (!h) { h = { em: '', esSeen: m.es }; LOBBY.mates.set(m.id, h); }
@@ -4477,8 +4633,8 @@ function lobbyTick(dt) {
   const plates = $('lbPlates'); wCam.updateMatrixWorld();
   if (plates.childElementCount !== ms.length || plates.dataset.k !== ms.map(m => m.id + m.rd + m.nick + m.cs + m.tm + (m.pf || []).join()).join('|') + pvpLobbyMode().md) {
     plates.dataset.k = ms.map(m => m.id + m.rd + m.nick + m.cs + m.tm + (m.pf || []).join()).join('|') + pvpLobbyMode().md; plates.textContent = '';
-    for (const m of ms) { const pf = readProf(m.pf), d = el('button', 'lbPl' + (m.rd ? ' rd' : '')); d.style.setProperty('--pc', pvpLobbyMode().md === 'team' ? TEAM_COL[m.tm] : pf.col); d.dataset.id = m.id;
-      d.append(el('span', 'lbAv', pf.av), (() => { const w = el('span', 'lbNm'); w.append(el('b', '', m.nick + (m.me ? ' (you)' : '')), el('small', '', (pvpLobbyMode().md === 'team' ? TEAM_NAME[m.tm] + ' · ' : '') + (m.host ? 'HOST · ' : '') + 'RANK ' + pf.lvl + ' · ' + (m.rd || m.host ? 'READY' : 'NOT READY'))); return w; })());
+    for (const m of ms) { const pf = readProf(m.pf), d = el('button', 'lbPl' + (m.rd ? ' rd' : '')); d.style.setProperty('--pc', pvpLobbyMode().md !== 'squad' ? TEAM_COL[m.tm] : pf.col); d.dataset.id = m.id;
+      d.append(el('span', 'lbAv', pf.av), (() => { const w = el('span', 'lbNm'); w.append(el('b', '', m.nick + (m.me ? ' (you)' : '')), el('small', '', (pvpLobbyMode().md !== 'squad' ? TEAM_NAME[m.tm] + ' · ' : '') + (m.host ? 'HOST · ' : '') + 'RANK ' + pf.lvl + ' · ' + (m.rd || m.host ? 'READY' : 'NOT READY'))); return w; })());
       d.onclick = () => showProfCard({ nick: m.nick, ...pf, skin: (CHAR_SKINS[m.cs] || {}).name || '' }); plates.appendChild(d); }
   }
   [...plates.children].forEach(d => { const h = LOBBY.mates.get(d.dataset.id); if (!h || !h.rig) return; const v = tmpV.set(0, 0, 0); h.rig.g.localToWorld(v); v.project(wCam); d.style.left = ((v.x * .5 + .5) * 100) + '%'; d.style.top = ((-v.y * .5 + .5) * 100) + '%'; });
@@ -4488,12 +4644,12 @@ function lobbyTick(dt) {
     if (!allRd) LOBBY.autoDone = false; else if (!LOBBY.cdEnd && !LOBBY.autoDone) { LOBBY.cdEnd = performance.now() + 10000; LOBBY.autoDone = true; } // everyone ready → 10 s countdown
     if (LOBBY.cdEnd) { rem = Math.max(0, (LOBBY.cdEnd - performance.now()) / 1000); if (rem <= 0) { LOBBY.cdEnd = 0; LOBBY.autoDone = false; $('olStart').onclick(); return; } } }
   else { const hp = NET.hostPres(); rem = hp ? fnum(hp.cd) : 0; }
-  const pk = JSON.stringify(pvpLobbyMode()) + PVP.pref; if (pk !== LOBBY.pvK) { LOBBY.pvK = pk; renderLobbyUI(); }
+  const pk = JSON.stringify(pvpLobbyMode()) + JSON.stringify(PVP.teams); if (pk !== LOBBY.pvK) { LOBBY.pvK = pk; renderLobbyUI(); }
   const ri = Math.ceil(rem); if (ri !== LOBBY.lastCd) { LOBBY.lastCd = ri; renderLobbyUI(); if (ri > 0 && ri <= 5) Audio_.play('ui'); }
 }
 function renderLobbyUI(full) {
   if (!$('lobby')) return; const hp = NET.hostPres(), ms = lobbyMembers();
-  setTxt('lbCode', NET.code); const mapId = NET.host ? SAVE.eq.map : (hp && MAPS[hp.mp] ? hp.mp : SAVE.eq.map); setTxt('lbMap', MAPS[mapId].name);
+  setTxt('lbCode', NET.code); const pm0 = pvpLobbyMode(); const mapId = pm0.md !== 'squad' ? pm0.ar : NET.host ? SAVE.eq.map : (hp && MAPS[hp.mp] ? hp.mp : SAVE.eq.map); setTxt('lbMap', MAPS[mapId].name);
   $('lbMapPrev').classList.toggle('hide', !NET.host); $('lbMapNext').classList.toggle('hide', !NET.host);
   const rem = NET.host ? (LOBBY.cdEnd ? Math.max(0, Math.ceil((LOBBY.cdEnd - performance.now()) / 1000)) : 0) : (hp ? Math.ceil(fnum(hp.cd)) : 0);
   const live = hp && hp.st === 'play';
@@ -4501,14 +4657,21 @@ function renderLobbyUI(full) {
   setTxt('lbTimerS', rem > 0 ? 'MATCH STARTS IN' : live ? 'YOUR SQUAD IS FIGHTING' : NET.host ? (ms.length < 2 ? 'WAITING FOR FRIENDS · SHARE THE CODE' : 'PRESS START OR WAIT FOR EVERYONE READY') : hp ? 'WAITING FOR THE HOST' : 'LOOKING FOR THE HOST…');
   const pm = pvpLobbyMode(); setTxt('lbCount', ms.length + ' / ' + pvpMaxPlayers(pm.md) + ' PLAYERS');
   for (const id of ['lbMd', 'lbKl', 'lbTl']) $(id).disabled = !NET.host;
-  setTxt('lbMd', '⚔ ' + PVP_MODE_NAME[pm.md] + (NET.host ? ' ▸' : '')); setTxt('lbKl', 'FIRST TO ' + pm.kl + ' KILLS'); setTxt('lbTl', pm.tl + ' MIN');
-  $('lbKl').classList.toggle('hide', pm.md === 'squad'); $('lbTl').classList.toggle('hide', pm.md === 'squad'); $('lbTeam').classList.toggle('hide', pm.md !== 'team');
-  setTxt('lbTeam', 'TEAM ' + TEAM_NAME[PVP.pref] + ' ⇄'); $('lbTeam').style.borderColor = TEAM_COL[PVP.pref]; $('lbTeam').style.color = TEAM_COL[PVP.pref];
-  if (NET.host && !rem && !live && pm.md === 'duel' && ms.length > 2) setTxt('lbTimerS', '1 VS 1 IS FOR 2 PLAYERS · PICK TEAM VS TEAM');
+  setTxt('lbMd', '⚔ ' + PVP_MODE_NAME[pm.md] + (NET.host ? ' ▸' : '')); setTxt('lbKl', PVP_RW_NAME[pm.rw] + (NET.host ? ' ▸' : '')); setTxt('lbTl', PVP_PREP + 'S PREP · ' + PVP_FIGHT + 'S ROUNDS'); $('lbTl').disabled = true;
+  $('lbKl').classList.toggle('hide', pm.md === 'squad'); $('lbTl').classList.toggle('hide', pm.md === 'squad'); $('lbTeam').classList.add('hide'); renderCmPanel(pm);
+  if (pm.md !== 'squad' && !rem && !live) setTxt('lbTimerS', NET.host ? 'TAP A PLAYER BELOW TO MOVE THEM · THEN START' : 'WAITING FOR THE HOST');
   const go = $('lbGo'); go.classList.toggle('hide', !NET.host); go.textContent = rem > 0 ? 'CANCEL' : 'START MATCH';
   const rd = $('lbReady'); rd.classList.toggle('hide', NET.host || live); rd.classList.toggle('on', LOBBY.rd); rd.textContent = LOBBY.rd ? '✓ READY' : 'READY UP';
-  $('lbJoin').classList.toggle('hide', NET.host || !live);
+  $('lbJoin').classList.toggle('hide', NET.host || !live || pm.md !== 'squad');
   if (full) renderChat();
+}
+function renderCmPanel(pm) {
+  const p = $('cmPanel'); p.classList.toggle('hide', pm.md === 'squad'); if (pm.md === 'squad') return;
+  const ms = lobbyMembers(), cap = pvpCap(pm.md), key = pm.md + '|' + NET.host + '|' + ms.map(m => m.id + ':' + teamOf(m.id) + m.nick).join(','); if (p.dataset.k === key) return; p.dataset.k = key; p.textContent = '';
+  const col = t => { const c = el('div', 'cmCol'); c.style.setProperty('--tc', TEAM_COL[t]); const list = ms.filter(m => teamOf(m.id) === t), h = el('h4', '', 'TEAM ' + TEAM_NAME[t]); h.append(el('span', '', list.length + ' / ' + cap)); c.append(h);
+    for (const m of list) { const b = el(NET.host ? 'button' : 'div', 'cmP'); b.append(el('span', '', m.nick + (m.me ? ' (you)' : '')), el('i', '', NET.host ? '⇄ MOVE' : m.host ? 'HOST' : '')); if (NET.host) b.onclick = () => pvpMovePlayer(m.id); c.append(b); }
+    for (let i = list.length; i < cap; i++) c.append(el('div', 'cmP empty', '— empty slot —')); return c; };
+  p.append(col(0), el('div', 'cmVs', 'VS'), col(1));
 }
 function lobbyEmoteBar() { const b = $('lbEmotes'); if (b.childElementCount) return; EMO_IDS.forEach(id => { const x = el('button', 'lbE'); x.title = EMOTES[id].n; x.append(el('span', '', EMOTES[id].i), el('small', '', EMOTES[id].n)); x.onclick = () => doEmote(id); b.appendChild(x); }); }
 
@@ -4593,15 +4756,13 @@ function setupV5() {
   $('lbReady').onclick = () => { LOBBY.rd = !LOBBY.rd; Audio_.play('ui'); netPresence(); renderLobbyUI(); };
   $('lbJoin').onclick = () => $('olJoinLive').onclick();
   const pvpSet = f => () => { if (!NET.host) return; const c = pvpCfg(); f(c); persist(); Audio_.play('ui'); renderLobbyUI(); renderOnline(); netPresence(); };
-  $('lbMd').onclick = pvpSet(c => { c.md = PVP_MODES[(PVP_MODES.indexOf(c.md) + 1) % PVP_MODES.length]; if (c.md === 'duel') c.kl = 5; else if (c.md === 'team') c.kl = 20; });
-  $('lbKl').onclick = pvpSet(c => { c.kl = PVP_KILLS[(PVP_KILLS.indexOf(c.kl) + 1) % PVP_KILLS.length]; });
-  $('lbTl').onclick = pvpSet(c => { c.tl = PVP_TIMES[(PVP_TIMES.indexOf(c.tl) + 1) % PVP_TIMES.length]; });
-  $('lbTeam').onclick = () => { PVP.pref = 1 - PVP.pref; Audio_.play('ui'); renderLobbyUI(); netPresence(); };
+  $('lbMd').onclick = pvpSet(c => { c.md = PVP_MODES[(PVP_MODES.indexOf(c.md) + 1) % PVP_MODES.length]; });
+  $('lbKl').onclick = pvpSet(c => { c.rw = PVP_RW[(PVP_RW.indexOf(c.rw) + 1) % PVP_RW.length]; });
   $('lbLeave').onclick = () => { LOBBY.rd = false; LOBBY.cdEnd = 0; netLeave(); };
   $('lbCopy').onclick = () => { try { navigator.clipboard.writeText(NET.code).then(() => toast('Code copied'), () => toast('Code: ' + NET.code)); } catch (e) { toast('Code: ' + NET.code); } };
   $('lbLoadout').onclick = () => { LOBBY.view = false; show('menu'); setTab('operator'); };
   $('lobbyBack').onclick = () => { LOBBY.view = true; };
-  const cyc = d => { if (!NET.host) return; const ids = Object.keys(MAPS); SAVE.eq.map = ids[(ids.indexOf(SAVE.eq.map) + d + ids.length) % ids.length]; persist(); buildMap(SAVE.eq.map); renderLobbyUI(); Audio_.play('ui'); };
+  const cyc = d => { if (!NET.host) return; if (pvpCfg().md !== 'squad') { const c = pvpCfg(); c.ar = ARENA_IDS[(ARENA_IDS.indexOf(c.ar) + d + ARENA_IDS.length) % ARENA_IDS.length]; Audio_.play('ui'); renderLobbyUI(); netPresence(); return; } const ids = Object.keys(MAPS).filter(k => !MAPS[k].arena); SAVE.eq.map = ids[(ids.indexOf(SAVE.eq.map) + d + ids.length) % ids.length]; persist(); buildMap(SAVE.eq.map); renderLobbyUI(); Audio_.play('ui'); };
   $('lbMapPrev').onclick = () => cyc(-1); $('lbMapNext').onclick = () => cyc(1);
   $('profCard').onclick = e => { if (e.target === $('profCard') || e.target.id === 'pcClose') hide('profCard'); };
   // profile tab
@@ -4962,10 +5123,12 @@ function wireUI() {
   $('olCode').oninput = e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); };
   $('olCreate').onclick = () => { if (!cleanName(SAVE.nick)) { SAVE.nick = 'Player' + (100 + (R() * 900 | 0)); $('olNick').value = SAVE.nick; persist(); } const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let c = ''; for (let i = 0; i < 4; i++) c += A[R() * A.length | 0]; netJoin(c, true); };
   $('olJoin').onclick = () => { if (!cleanName(SAVE.nick)) { SAVE.nick = 'Player' + (100 + (R() * 900 | 0)); $('olNick').value = SAVE.nick; persist(); } netJoin($('olCode').value, false); };
+  $('olCreateCm').onclick = () => { const c = pvpCfg(); if (c.md === 'squad') c.md = 'duel'; PVP.teams = {}; $('olCreate').onclick(); };
+  $('cmBtn').onclick = () => { Audio_.play('ui'); setTab('online'); toast('Press “Create custom match”, share the code, then pick the teams in the lobby', 4000); };
   $('olLeave').onclick = () => netLeave();
   $('olCopy').onclick = () => { try { navigator.clipboard.writeText(NET.code).then(() => toast('Code copied: ' + NET.code), () => toast('Code: ' + NET.code)); } catch (e) { toast('Code: ' + NET.code); } };
-  $('olStart').onclick = () => { if (!NET.host) return; Audio_.init(); const pv = pvpPrepare(); if (pv === false) return; NET.on = true; pvpSetup(pv); netEmit('start', pv ? { map: SAVE.eq.map, pvp: pv } : { map: SAVE.eq.map }); startMatch(true); };
-  $('olJoinLive').onclick = () => { const hp = NET.hostPres(); if (!hp || hp.st !== 'play' || !MAPS[hp.mp]) return; Audio_.init(); NET.on = true; G.netMap = hp.mp; pvpSetup(Array.isArray(hp.ps) && PVP_MODES.includes(hp.md) ? { md: hp.md, kl: hp.kl, tl: hp.tl, teams: hp.tms, sc: hp.ps, left: hp.ps[2] } : null); startMatch(true); };
+  $('olStart').onclick = () => { if (!NET.host) return; Audio_.init(); const pv = pvpPrepare(); if (pv === false) return; NET.on = true; pvpSetup(pv); netEmit('start', pv ? { map: pv.ar, pvp: pv } : { map: SAVE.eq.map }); startMatch(true); };
+  $('olJoinLive').onclick = () => { const hp = NET.hostPres(); if (!hp || hp.st !== 'play' || !MAPS[hp.mp]) return; if (hp.md && hp.md !== 'squad') { toast('This custom match already started — wait for the next one', 3000); return; } Audio_.init(); NET.on = true; G.netMap = hp.mp; pvpSetup(null); startMatch(true); };
   $('olSrv').value = SAVE.server || CFG.server || ''; $('olSrvSave').onclick = () => { const v = $('olSrv').value.trim(); if (v && !/^wss?:\/\/[\w.\-:\/]{3,200}$/.test(v)) { toast('Server must look like wss://your-server.onrender.com'); return; } SAVE.server = v; persist(); netLeave(); NET.ws = false; NET.room = null; netBoot(); toast(v ? 'Server saved' : 'Server cleared'); };
   for (const [id, fn] of [['spPrev', () => specStep(-1)], ['spNext', () => specStep(1)], ['spView', () => { SPEC.third = !SPEC.third; }]]) { const b = $(id); b.addEventListener('click', e => { e.stopPropagation(); fn(); Audio_.play('ui'); }); b.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); fn(); Audio_.play('ui'); }, { passive: false }); }
   $('bootFriends').onclick = () => { $('bootGo').onclick(); setTab('online'); };
@@ -4991,7 +5154,7 @@ async function boot() {
 }
 ['pointerdown', 'keydown', 'touchstart'].forEach(ev => addEventListener(ev, () => { Audio_.init(); if (world && world.rain) Audio_.rain(true, .1); }, { once: true, passive: true }));
 boot().catch(e => { console.error(e); $('bootMsg').textContent = 'Could not start: ' + (e && e.message || e); });
-if (CFG.debug) window.__MP = { NET, damageEnemy, enemyEye, G, P, get enemies() { return enemies; }, get world() { return world; }, get SAVE() { return SAVE; }, spawnEnemy, explode, damagePlayer, startMatch, buildMap, killEnemy, tryFire, switchWeapon, openCrate, claimDaily, collect, Platform, projs, pickups, dropPickup, MANUAL, step: dt => tick(dt), buildHumanoid, buildGun, buildDrone, VM, get nowT() { return nowT; }, CHAR_SKINS, fireball, sparks, smoke, K, get jeep() { return world.jeep; }, get allies() { return allies; }, enterJeep, exitJeep, boardTrain, leaveTrain, deployWall, placeMine, useMedkit, grantLoot, doUse, camera, scene, renderer, freeSpot, queryBoxes };
+if (CFG.debug) window.__MP = { PVP, damagePlayer, NET, damageEnemy, enemyEye, G, P, get enemies() { return enemies; }, get world() { return world; }, get SAVE() { return SAVE; }, spawnEnemy, explode, damagePlayer, startMatch, buildMap, killEnemy, tryFire, switchWeapon, openCrate, claimDaily, collect, Platform, projs, pickups, dropPickup, MANUAL, step: dt => tick(dt), buildHumanoid, buildGun, buildDrone, VM, get nowT() { return nowT; }, CHAR_SKINS, fireball, sparks, smoke, K, get jeep() { return world.jeep; }, get allies() { return allies; }, enterJeep, exitJeep, boardTrain, leaveTrain, deployWall, placeMine, useMedkit, grantLoot, doUse, camera, scene, renderer, freeSpot, queryBoxes };
 
 </script>
 </body>
